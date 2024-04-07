@@ -26,3 +26,43 @@ torch = ">=2.0.0, !=2.0.1, !=2.1.0" # https://stackoverflow.com/a/76647180
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[project]
+name = "bullet_from_a_gun"
+readme = "README.md"
+dynamic = [ "dependencies", "version",]
+
+[project.scripts]
+bullet-from-a-gun = "bullet_from_a_gun.__main__:main"
+
+[project.optional-dependencies]
+docs = [ "docutils<0.18.0", "sphinx~=3.4.3", "sphinx_rtd_theme==0.5.1", "nbsphinx==0.8.1", "sphinx-autodoc-typehints==1.11.1", "sphinx_copybutton==0.3.1", "ipykernel>=5.3, <7.0", "Jinja2<3.1.0", "myst-parser~=0.17.2",]
+
+[tool.kedro]
+package_name = "bullet_from_a_gun"
+project_name = "Bullet From A Gun"
+kedro_init_version = "0.19.3"
+tools = [ "Linting", "Documentation", "Data Structure", "Kedro Viz",]
+example_pipeline = "False"
+source_dir = "src"
+
+[tool.ruff]
+line-length = 88
+show-fixes = true
+select = [ "F", "W", "E", "I", "UP", "PL", "T201",]
+ignore = [ "E501",]
+
+[project.entry-points."kedro.hooks"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.setuptools.dynamic.dependencies]
+file = "requirements.txt"
+
+[tool.setuptools.dynamic.version]
+attr = "bullet_from_a_gun.__version__"
+
+[tool.setuptools.packages.find]
+where = [ "src",]
+namespaces = false
