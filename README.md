@@ -14,5 +14,9 @@ Our primary goal is to systematically evaluate and identify the most effective C
 # Methodology
 `todo`
 
+# Rferences
+- [https://arxiv.org/abs/1807.05511](https://arxiv.org/abs/1807.05511)
+- [https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298](https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298)
+
 # License
 This project is licensed under the MIT License - see the LICENSE file for details.
