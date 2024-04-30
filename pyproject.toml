@@ -23,6 +23,7 @@ fastparquet = "^2024.2.0"
 torch = ">=2.0.0, !=2.0.1, !=2.1.0" # https://stackoverflow.com/a/76647180
 opencv-python = "^4.9.0.80"
 poetry-plugin-export = "^1.7.1"
+ultralytics = "^8.2.5"
 
 
 [build-system]
