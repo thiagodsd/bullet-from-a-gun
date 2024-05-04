@@ -313,3 +313,4 @@ cython_debug/
 #.idea/
 notebooks/yolov5s.pt
 notebooks/yolov5l.pt
+notebooks/category_names.txt
