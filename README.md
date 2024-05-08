@@ -14,7 +14,15 @@ Our primary goal is to systematically evaluate and identify the most effective C
 # Methodology
 `todo`
 
-# Rferences
+## Data Preparation
+The dataset used in this project consists of images of targets with gunshot holes, captured under mainly two different conditions: in with the target is composed by concentric circles (reffered as "circle" in the current work) and the other with the target is composed by concentric rounded-corner like squares (reffered as "vertical" in the current work).
+
+The first step in the data preparation process was to annotate the gunshot holes in the images. This was done using the [Supervisely](https://supervise.ly/) platform, which allows for the creation of custom object detection datasets. The annotated dataset was then exported in both formats, YOLOv5 and COCO, to facilitate the training of different CNN models.
+
+# Development Notes
+
+
+# References
 - [https://arxiv.org/abs/1807.05511](https://arxiv.org/abs/1807.05511)
 - [https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298](https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298)
 
