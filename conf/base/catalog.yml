@@ -1,0 +1,63 @@
+raw_gunshots_images:
+    type: partitions.PartitionedDataset
+    path: data/01_raw/gunshots/
+    dataset:
+        type: pillow.ImageDataset
+    filename_suffix: '.JPG'
+    metadata:
+        kedro-viz:
+            layer: raw
+
+intermediate_circle_images:
+    type: partitions.PartitionedDataset
+    path: data/02_intermediate/gunshots/circle/
+    dataset:
+        type: pillow.ImageDataset
+    filename_suffix: '.JPG'
+    metadata:
+        kedro-viz:
+            layer: intermediate
+
+intermediate_vertical_images:
+    type: partitions.PartitionedDataset
+    path: data/02_intermediate/gunshots/vertical/
+    dataset:
+        type: pillow.ImageDataset
+    filename_suffix: '.JPG'
+    metadata:
+        kedro-viz:
+            layer: intermediate
+
+primary_circle_coco_annotations:
+    type: json.JSONDataset
+    filepath: data/03_primary/gunshots/circle/coco_format/annotations/instances.json
+    metadata:
+        kedro-viz:
+            layer: primary
+
+primary_circle_yolov5_train_images:
+    type: partitions.PartitionedDataset
+    path: data/03_primary/gunshots/circle/yolov5_format/images/train/
+    dataset:
+        type: pillow.ImageDataset
+    filename_suffix: '.jpg'
+    metadata:
+        kedro-viz:
+            layer: primary
+
+primary_circle_yolov5_train_annotations:
+    type: partitions.PartitionedDataset
+    path: data/03_primary/gunshots/circle/yolov5_format/labels/train/
+    dataset:
+        type: text.TextDataset
+    filename_suffix: '.txt'
+    metadata:
+        kedro-viz:
+            layer: primary
+
+primary_circle_yolov5_train_config:
+    type: json.JSONDataset
+    filepath: data/03_primary/gunshots/circle/yolov5_format/data_config.yaml
+    metadata:
+        kedro-viz:
+            layer: primary

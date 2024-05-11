@@ -26,6 +26,7 @@ poetry-plugin-export = "^1.7.1"
 ultralytics = "^8.2.5"
 
 
+yolov5 = "^7.0.13"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

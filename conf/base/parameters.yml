@@ -1,0 +1,10 @@
+circle_yolov5_train_config:
+    colors: [240, 230, 92]
+    names: [gunshot_hole]
+    nc: 1
+    train  : data/03_primary/gunshots/circle/yolov5_format/images/train/
+    val    : data/03_primary/gunshots/circle/yolov5_format/images/val/
+    labels : data/03_primary/gunshots/circle/yolov5_format/labels/train
+    epochs: 3
+    batch_size: 16
+    model_path: data/06_models/pretrained/
