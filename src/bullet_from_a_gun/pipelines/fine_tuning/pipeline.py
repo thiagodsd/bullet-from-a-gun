@@ -5,7 +5,7 @@ generated using Kedro 0.19.5
 
 from kedro.pipeline import Pipeline, node
 
-from .nodes import fine_tune_yolov5_model
+from .nodes import fine_tune_yolo_model
 
 
 def create_pipeline(**kwargs):
@@ -13,14 +13,14 @@ def create_pipeline(**kwargs):
     return Pipeline(
         [
             node(
-                func=fine_tune_yolov5_model,
+                func=fine_tune_yolo_model,
                 inputs=[
                     "primary_circle_yolov5_train_images",
                     "primary_circle_yolov5_train_annotations",
-                    "params:circle_yolov5_train_config"
+                    "params:circle_yolo_exp_2"
                 ],
                 outputs="status",
-                name="fine_tune_yolov5_model"
+                name="fine_tune_yolo_model"
             )
         ]
     )
