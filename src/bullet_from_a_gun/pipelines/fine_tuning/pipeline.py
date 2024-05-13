@@ -17,7 +17,7 @@ def create_pipeline(**kwargs):
                 inputs=[
                     "primary_circle_yolov5_train_images",
                     "primary_circle_yolov5_train_annotations",
-                    "params:circle_yolo_exp_2"
+                    "params:circle_yolo_exp_3"
                 ],
                 outputs="status",
                 name="fine_tune_yolo_model"
