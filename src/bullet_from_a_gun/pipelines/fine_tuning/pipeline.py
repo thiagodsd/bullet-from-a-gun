@@ -15,9 +15,7 @@ def create_pipeline(**kwargs):
             node(
                 func=fine_tune_yolo_model,
                 inputs=[
-                    "primary_circle_yolov5_train_images",
-                    "primary_circle_yolov5_train_annotations",
-                    "params:circle_yolo_exp_3"
+                    "params:circle_yolo_exp_1"
                 ],
                 outputs="status",
                 name="fine_tune_yolo_model"
