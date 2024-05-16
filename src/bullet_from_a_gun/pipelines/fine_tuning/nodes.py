@@ -4,10 +4,8 @@ generated using Kedro 0.19.5
 """
 
 import logging
-from typing import Dict
 
 import torch
-from PIL import Image
 from ultralytics import YOLO
 
 logging.basicConfig(level=logging.INFO)
@@ -31,22 +29,22 @@ def fine_tune_yolo_model(
     logger.info(torch.cuda.memory_allocated())
     logger.info(torch.cuda.memory_reserved())
     logger.info(torch.cuda.memory_summary())
-    model.tune(
-        name=train_config["experiment_name"],
-        data=train_config["model_config"]["data"],
-        epochs=train_config["model_config"]["epochs"],
-        batch=train_config["model_config"]["batch"],
-        imgsz=train_config["model_config"]["img_size"],
-        plots=True,
-        save=False,
-        val=True,
-        exist_ok=True,
-        seed=0,
-        cache=True,
-        # single_cls=True,
-        iterations=3,
-        device=0
-    )
+    # model.tune(
+    #     name=train_config["experiment_name"],
+    #     data=train_config["model_config"]["data"],
+    #     epochs=train_config["model_config"]["epochs"],
+    #     batch=train_config["model_config"]["batch"],
+    #     imgsz=train_config["model_config"]["img_size"],
+    #     plots=True,
+    #     save=False,
+    #     val=True,
+    #     exist_ok=True,
+    #     seed=0,
+    #     cache=True,
+    #     # single_cls=True,
+    #     iterations=3,
+    #     device=0
+    # )
     model.train(
         name=train_config["experiment_name"],
         data=train_config["model_config"]["data"],
@@ -61,8 +59,7 @@ def fine_tune_yolo_model(
         cache=True,
         # single_cls=True,
         # iterations=3,
-        device=0
+        device=0,
+        cfg=train_config["model_config"]["cfg"],
     )
-
-
     return "Model trained and saved successfully"
