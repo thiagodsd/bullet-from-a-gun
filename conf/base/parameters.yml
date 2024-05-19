@@ -53,3 +53,20 @@ circle_yolo_exp_2_2: # yolov5s 32 epochs 8 batch 640 img_size
         names: [gunshot_hole]
         colors: [240, 230, 92]
         cfg: data/03_primary/gunshots/circle/yolov5_format/hyp_v8.yaml
+# torchvision experiments
+circle_torch_exp_1_1:
+    experiment_name: FasterRCNN_ResNet50_FPN_V2
+    model_name : FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT
+    model_config:
+        name: bullet_hole_circle
+        data: data/03_primary/gunshots/circle/torch_format/data_config.yaml
+        epochs: 3
+        batch: 2
+        learning_rate: 0.001
+        img_size: 640
+        nc: 1
+        names: [gunshot_hole]
+        colors: [240, 230, 92]
+        cfg: data/03_primary/gunshots/circle/torch_format/hyp.yaml
+        coco_images: data/03_primary/gunshots/circle/torchvision_format/images
+        coco_annotations: data/03_primary/gunshots/circle/torchvision_format/annotations/instances.json
