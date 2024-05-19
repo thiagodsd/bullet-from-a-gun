@@ -64,7 +64,8 @@ circle_torch_exp_1_1:
         batch: 2
         learning_rate: 0.001
         img_size: 640
-        nc: 1
+        nc: 2
+        num_classes: 2
         names: [gunshot_hole]
         colors: [240, 230, 92]
         cfg: data/03_primary/gunshots/circle/torch_format/hyp.yaml

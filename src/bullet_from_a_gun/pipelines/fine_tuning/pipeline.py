@@ -24,8 +24,8 @@ def create_pipeline(**kwargs):
                 func=run_torchvision_model,
                 inputs=[
                     "params:circle_torch_exp_1_1",
-                    "primary_circle_yolov5_train_images",
-                    "primary_circle_yolov5_train_annotations"
+                    # "primary_circle_yolov5_train_images",
+                    # "primary_circle_yolov5_train_annotations"
                 ],
                 outputs="status_torch",
                 name="run_torchvision_model"
