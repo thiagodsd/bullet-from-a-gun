@@ -35,6 +35,110 @@ from ultralytics import YOLO
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+class CocoEvaluator:
+    def __init__(self, coco_gt, iou_types):
+        if not isinstance(iou_types, (list, tuple)):
+            raise TypeError(f"This constructor expects iou_types of type list or tuple, instead got {type(iou_types)}")
+        self.coco_gt = copy.deepcopy(coco_gt)
+        self.iou_types = iou_types
+        self.coco_eval = {iou_type: COCOeval(coco_gt, iouType=iou_type) for iou_type in iou_types}
+        self.img_ids = []
+        self.eval_imgs = {k: [] for k in iou_types}
+
+    def update(self, predictions):
+        img_ids = list(np.unique(list(predictions.keys())))
+        self.img_ids.extend(img_ids)
+
+        for iou_type in self.iou_types:
+            results = self.prepare(predictions, iou_type)
+            with redirect_stdout(io.StringIO()):
+                coco_dt = self.coco_gt.loadRes(results) if results else COCO()
+            coco_eval = self.coco_eval[iou_type]
+            coco_eval.cocoDt = coco_dt
+            coco_eval.params.imgIds = list(set(self.img_ids) & set(self.coco_gt.getImgIds()))
+            coco_eval.evaluate()
+            self.eval_imgs[iou_type].append(coco_eval.evalImgs)
+
+    def synchronize_between_processes(self):
+        pass
+
+    def accumulate(self):
+        for coco_eval in self.coco_eval.values():
+            coco_eval.accumulate()
+
+    def summarize(self):
+        for coco_eval in self.coco_eval.values():
+            coco_eval.summarize()
+
+    def prepare(self, predictions, iou_type):
+        if iou_type == "bbox":
+            return self.prepare_for_coco_detection(predictions)
+        raise ValueError(f"Unknown iou type {iou_type}")
+
+    def prepare_for_coco_detection(self, predictions):
+        coco_results = []
+        for original_id, prediction in predictions.items():
+            if len(prediction["boxes"]) == 0:
+                continue
+
+            boxes = prediction["boxes"]
+            scores = prediction["scores"]
+            labels = prediction["labels"]
+
+            boxes = boxes.tolist()
+            scores = scores.tolist()
+            labels = labels.tolist()
+
+            coco_results.extend(
+                [
+                    {
+                        "image_id": original_id,
+                        "category_id": labels[k],
+                        "bbox": [box[0], box[1], box[2] - box[0], box[3] - box[1]],
+                        "score": scores[k],
+                    }
+                    for k, box in enumerate(boxes)
+                ]
+            )
+        return coco_results
+
+def get_coco_api_from_dataset(dataset):
+    """
+    Create a COCO API object from a dataset.
+    """
+    coco_ds = COCO()
+    ann_id = 1
+    dataset_dict = {"images": [], "categories": [], "annotations": []}
+    for img_idx in range(len(dataset)):
+        img, targets = dataset[img_idx]
+        image_id = int(targets["image_id"].item())
+        img_dict = {
+            "id": image_id,
+            "height": img.shape[1],
+            "width": img.shape[2],
+        }
+        dataset_dict["images"].append(img_dict)
+        bboxes = targets["boxes"]
+        labels = targets["labels"]
+        areas = targets["area"]
+        iscrowd = targets["iscrowd"]
+        for bbox, label, area, iscrowd_flag in zip(bboxes, labels, areas, iscrowd):
+            ann = {
+                "id": ann_id,
+                "image_id": image_id,
+                "bbox": bbox.tolist(),
+                "category_id": int(label.item()),
+                "area": float(area.item()),
+                "iscrowd": int(iscrowd_flag.item())
+            }
+            dataset_dict["annotations"].append(ann)
+            ann_id += 1
+    coco_ds.dataset = dataset_dict
+    coco_ds.createIndex()
+    return coco_ds
+
+
 class CustomCocoDataset(torch.utils.data.Dataset):
     """
     Custom dataset class for COCO dataset.
@@ -110,110 +214,6 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq):  
 
         if i % print_freq == 0:
             logger.info(f"Epoch: [{epoch}], Step: [{i}/{len(data_loader)}], Loss: {losses.item()}")
-
-
-def get_coco_api_from_dataset(dataset):
-    """
-    Create a COCO API object from a dataset.
-    """
-    coco_ds = COCO()
-    ann_id = 1
-    dataset_dict = {"images": [], "categories": [], "annotations": []}
-    for img_idx in range(len(dataset)):
-        img, targets = dataset[img_idx]
-        image_id = int(targets["image_id"].item())
-        img_dict = {
-            "id": image_id,
-            "height": img.shape[1],
-            "width": img.shape[2],
-        }
-        dataset_dict["images"].append(img_dict)
-        bboxes = targets["boxes"]
-        labels = targets["labels"]
-        areas = targets["area"]
-        iscrowd = targets["iscrowd"]
-        for bbox, label, area, iscrowd_flag in zip(bboxes, labels, areas, iscrowd):
-            ann = {
-                "id": ann_id,
-                "image_id": image_id,
-                "bbox": bbox.tolist(),
-                "category_id": int(label.item()),
-                "area": float(area.item()),
-                "iscrowd": int(iscrowd_flag.item())
-            }
-            dataset_dict["annotations"].append(ann)
-            ann_id += 1
-    coco_ds.dataset = dataset_dict
-    coco_ds.createIndex()
-    return coco_ds
-
-
-class CocoEvaluator:
-    def __init__(self, coco_gt, iou_types):
-        if not isinstance(iou_types, (list, tuple)):
-            raise TypeError(f"This constructor expects iou_types of type list or tuple, instead got {type(iou_types)}")
-        self.coco_gt = copy.deepcopy(coco_gt)
-        self.iou_types = iou_types
-        self.coco_eval = {iou_type: COCOeval(coco_gt, iouType=iou_type) for iou_type in iou_types}
-        self.img_ids = []
-        self.eval_imgs = {k: [] for k in iou_types}
-
-    def update(self, predictions):
-        img_ids = list(np.unique(list(predictions.keys())))
-        self.img_ids.extend(img_ids)
-
-        for iou_type in self.iou_types:
-            results = self.prepare(predictions, iou_type)
-            with redirect_stdout(io.StringIO()):
-                coco_dt = self.coco_gt.loadRes(results) if results else COCO()
-            coco_eval = self.coco_eval[iou_type]
-            coco_eval.cocoDt = coco_dt
-            coco_eval.params.imgIds = list(set(self.img_ids) & set(self.coco_gt.getImgIds()))
-            coco_eval.evaluate()
-            self.eval_imgs[iou_type].append(coco_eval.evalImgs)
-
-    def synchronize_between_processes(self):
-        pass
-
-    def accumulate(self):
-        for coco_eval in self.coco_eval.values():
-            coco_eval.accumulate()
-
-    def summarize(self):
-        for coco_eval in self.coco_eval.values():
-            coco_eval.summarize()
-
-    def prepare(self, predictions, iou_type):
-        if iou_type == "bbox":
-            return self.prepare_for_coco_detection(predictions)
-        raise ValueError(f"Unknown iou type {iou_type}")
-
-    def prepare_for_coco_detection(self, predictions):
-        coco_results = []
-        for original_id, prediction in predictions.items():
-            if len(prediction["boxes"]) == 0:
-                continue
-
-            boxes = prediction["boxes"]
-            scores = prediction["scores"]
-            labels = prediction["labels"]
-
-            boxes = boxes.tolist()
-            scores = scores.tolist()
-            labels = labels.tolist()
-
-            coco_results.extend(
-                [
-                    {
-                        "image_id": original_id,
-                        "category_id": labels[k],
-                        "bbox": [box[0], box[1], box[2] - box[0], box[3] - box[1]],
-                        "score": scores[k],
-                    }
-                    for k, box in enumerate(boxes)
-                ]
-            )
-        return coco_results
 
 
 @torch.inference_mode()
