@@ -26,8 +26,40 @@ The dataset used in this project consists of images of targets with gunshot hole
 
 The first step in the data preparation process was to annotate the gunshot holes in the images. This was done using the [Supervisely](https://supervise.ly/) platform, which allows for the creation of custom object detection datasets. The annotated dataset was then exported in both formats, YOLOv5 and COCO, to facilitate the training of different CNN models.
 
+Images were cropped in bulks of 50 images using the web tool [Bulk Image Crop](https://bulkimagecrop.com/), by uploading them in the tool and setting the target aspect ratio to 1:1. Then all images were previewed and the ones that were not cropped correctly were manually cropped using the same tool.
+
 # Development Notes
 
+## Object Detection Pipeline
+
+- Region Proposal Methods
+    - Selective Search
+    - Edge Boxes
+    - Region Proposal Networks (RPN)
+    - Superpixels
+
+---
+
+- Dataset Preparation
+- Neural Network Architecture Selection
+  - Propósal (Two-Stage)
+    - RCNN
+    - Fast RCNN
+    - Faster RCNN
+    - Mask RCNN
+    - RFCN
+  - Proposal-Free (One-Stage)
+    - YOLO
+    - SSD
+- Model Training
+- Inference
+- Evaluation
+- Results
+
+YOLO vs RCNN
+- YOLO is faster than RCNN
+- RCNN is more accurate than YOLO
+- YOLO is better for real-time applications
 
 # References
 - [https://arxiv.org/abs/1807.05511](https://arxiv.org/abs/1807.05511)
