@@ -1,3 +1,24 @@
+gunshot:
+    dataprep_params:
+        experiment_id: "gunshot"
+        coco_data:
+            path: data/05_model_input/gunshots/coco
+            datasets:
+                - train
+                - valid
+                - test
+    fine_tuning_params:
+        pretrained_model_config: COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml
+        num_workers: 2
+        pretrained_model_weights: COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml
+        ims_per_batch: 2
+        base_lr: 0.00025
+        max_iter: 5000
+        steps: [3000, 4000]
+        batch_size_per_image: 128
+        num_classes: 1
+        score_thresh_test: 0.7
+
 # yolo experiments
 ## yolov8n
 circle_yolo_exp_1_1: # yolov8n 32 epochs 8 batch 640 img_size

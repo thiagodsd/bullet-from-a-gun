@@ -1,3 +1,11 @@
+#
+#
+#
+gunshot.processed_dataset:
+    type: MemoryDataset
+    copy_mode: assign
+
+
 # 
 # GENERIC
 # 

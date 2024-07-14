@@ -63,7 +63,7 @@ def create_pipeline(**kwargs) -> Pipeline:
         node(
             func=read_coco_data,
             inputs="params:dataprep_params",
-            outputs="processed_images",
+            outputs="processed_dataset",
             name="read_coco_data",
         ),
     ])

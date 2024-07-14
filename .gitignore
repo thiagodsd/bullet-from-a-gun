@@ -316,3 +316,4 @@ notebooks/yolov5l.pt
 notebooks/category_names.txt
 runs/**/*.pt
 runs/**/*.pth
+output/**/*
