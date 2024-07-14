@@ -2,24 +2,16 @@
 This is a boilerplate pipeline 'evaluation'
 generated using Kedro 0.19.5
 """
-import json
 import logging
-import os
-import random
 
-from PIL import Image
-import coloredlogs
 import cv2
-import detectron2
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-import torch
 from detectron2 import model_zoo
 from detectron2.config import get_cfg
 from detectron2.data import MetadataCatalog
 from detectron2.engine import DefaultPredictor
 from detectron2.utils.visualizer import Visualizer
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

@@ -1,5 +1,9 @@
-# This is a boilerplate parameters config generated for pipeline 'data_preparation'
-# using Kedro 0.19.5.
-#
-# Documentation for this file format can be found in "Parameters"
-# Link: https://docs.kedro.org/en/0.19.5/configuration/parameters.html
+gunshot:
+    dataprep_params:
+        experiment_id: "gunshot"
+        coco_data:
+            path: data/05_model_input/gunshots/coco
+            datasets:
+                - train
+                - valid
+                - test

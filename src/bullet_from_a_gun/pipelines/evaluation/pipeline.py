@@ -29,10 +29,11 @@ def create_pipeline(**kwargs) -> Pipeline:
         ),
     ])
 
-    # proof-of-concept
+    # generic
     generic_evaluation = pipeline(
         pipe=template_evaluation,
         namespace="generic",
     )
+    # kedro run --pipeline "evaluation"
 
     return generic_evaluation
