@@ -4,8 +4,8 @@ from typing import Dict
 from kedro.pipeline import Pipeline
 
 from .pipelines.data_preparation import create_pipeline as data_preparation_pipeline
-from .pipelines.fine_tuning import create_pipeline as fine_tuning_pipeline
 from .pipelines.evaluation import create_pipeline as evaluation_pipeline
+from .pipelines.fine_tuning import create_pipeline as fine_tuning_pipeline
 
 
 def register_pipelines() -> Dict[str, Pipeline]:

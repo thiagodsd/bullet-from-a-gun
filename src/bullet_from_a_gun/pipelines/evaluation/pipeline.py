@@ -17,8 +17,14 @@ def create_pipeline(**kwargs) -> Pipeline:
     template_evaluation = pipeline([
         node(
             func=evaluate_model,
-            inputs=None,
-            outputs="results",
+            inputs=[
+                "params:evaluation_params",
+                "raw_images"
+            ],
+            outputs=[
+                "object_detected_metadata",
+                "object_detected_images",
+            ],
             name="evaluate_model",
         ),
     ])
@@ -26,7 +32,7 @@ def create_pipeline(**kwargs) -> Pipeline:
     # proof-of-concept
     generic_evaluation = pipeline(
         pipe=template_evaluation,
-        namespace="generic"
+        namespace="generic",
     )
 
     return generic_evaluation

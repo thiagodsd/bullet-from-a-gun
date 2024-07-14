@@ -30,6 +30,7 @@ ultralytics = "^8.2.5"
 yolov5 = "^7.0.13"
 pycocotools = "^2.0.7"
 pyyaml = "^6.0.1"
+coloredlogs = "^15.0.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

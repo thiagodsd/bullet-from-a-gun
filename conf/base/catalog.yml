@@ -1,3 +1,41 @@
+# 
+# GENERIC
+# 
+generic.raw_images:
+    type: partitions.PartitionedDataset
+    path: data/01_raw/generic/
+    dataset:
+        type: pillow.ImageDataset
+    metadata:
+        kedro-viz:
+            layer: raw
+
+generic.object_detected_images:
+    type: partitions.PartitionedDataset
+    path: data/07_model_output/generic/
+    dataset:
+        type: pillow.ImageDataset
+    filename_suffix: '.jpg'
+    metadata:
+        kedro-viz:
+            layer: model output
+
+generic.object_detected_metadata:
+    type: partitions.PartitionedDataset
+    path: data/07_model_output/generic/
+    dataset:
+        type: json.JSONDataset
+        save_args:
+            indent: 4
+            
+    filename_suffix: '.json'
+    metadata:
+        kedro-viz:
+            layer: model output
+
+# 
+# GUNSHOTS (OLD)
+# 
 raw_gunshots_images:
     type: partitions.PartitionedDataset
     path: data/01_raw/gunshots/

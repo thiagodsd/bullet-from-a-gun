@@ -5,7 +5,7 @@ generated using Kedro 0.19.5
 
 from kedro.pipeline import Pipeline, node
 
-from .nodes import run_yolo_model, run_torchvision_model
+from .nodes import run_torchvision_model, run_yolo_model
 
 
 def create_pipeline(**kwargs):
