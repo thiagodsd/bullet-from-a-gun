@@ -36,7 +36,7 @@ def _handle_json_annotations(coco_data_path: str):
     for image_id, image_info in images.items():
         record = {}
 
-        filename = f"{coco_data_path.replace('_annotations.coco.json', '')}/{image_info['file_name']}"
+        filename = f"{coco_data_path.replace('/_annotations.coco.json', '')}/{image_info['file_name']}"
         height, width = image_info['height'], image_info['width']
 
         record["file_name"] = filename

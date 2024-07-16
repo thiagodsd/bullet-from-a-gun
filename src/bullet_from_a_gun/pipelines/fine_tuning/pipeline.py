@@ -33,4 +33,18 @@ def create_pipeline(**kwargs) -> Pipeline:
     )
     # kedro run --to-nodes=gunshot.fine_tune_detectron2
 
-    return gunshot_fine_tuning
+    # aquarium
+    aquarium_fine_tuning = pipeline(
+        pipe=template_fine_tuning,
+        namespace="aquarium",
+    )
+    # kedro run --to-nodes=aquarium.fine_tune_detectron2
+
+    # bullets
+    bullets_fine_tuning = pipeline(
+        pipe=template_fine_tuning,
+        namespace="bullets",
+    )
+    # kedro run --to-nodes=bullets.fine_tune_detectron2
+
+    return gunshot_fine_tuning + aquarium_fine_tuning + bullets_fine_tuning
