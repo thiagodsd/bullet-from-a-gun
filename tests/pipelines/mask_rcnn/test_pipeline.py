@@ -1,5 +1,5 @@
 """
-This is a boilerplate test file for pipeline 'data_preparation'
+This is a boilerplate test file for pipeline 'mask_rcnn'
 generated using Kedro 0.19.5.
 Please add your pipeline tests here.
 

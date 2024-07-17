@@ -1,5 +1,0 @@
-generic:
-    evaluation_params:
-        pretrained: true
-        pretrained_model_config: "COCO-Detection/retinanet_R_50_FPN_1x.yaml"
-        score_thresh_test: 0.5

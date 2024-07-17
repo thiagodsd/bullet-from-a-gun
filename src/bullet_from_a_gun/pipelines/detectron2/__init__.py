@@ -1,5 +1,5 @@
 """
-This is a boilerplate pipeline 'evaluation'
+This is a boilerplate pipeline 'detectron2'
 generated using Kedro 0.19.5
 """
 
