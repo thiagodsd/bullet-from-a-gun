@@ -36,7 +36,7 @@ def _handle_json_annotations(coco_data_path: str):
     for image_id, image_info in images.items():
         record = {}
 
-        filename = image_info['file_name']
+        filename = f"{coco_data_path.replace('/_annotations.coco.json', '')}/{image_info['file_name']}"
         height, width = image_info['height'], image_info['width']
 
         record["file_name"] = filename
@@ -86,14 +86,16 @@ def read_coco_data(
         DatasetCatalog.register(f"{_experiment_id_}_{_dataset_}", lambda: _annotations_)
         MetadataCatalog.get(f"{_experiment_id_}_{_dataset_}").set(thing_classes=["none", "bullets"])
 
-    # sanity check (train)
-    train_metadata = MetadataCatalog.get(f"{_experiment_id_}_train")
-    dataset_dicts = _handle_json_annotations(f"{_coco_path_}/train/_annotations.coco.json")
-    for _img_ in random.sample(dataset_dicts, 3):
-        logger.debug(_img_)
-        im = cv2.imread(f"{_coco_path_}/train/{_img_['file_name']}")
-        visualizer = Visualizer(im[:, :, ::-1], metadata=train_metadata, scale=0.5)
-        out = visualizer.draw_dataset_dict(_img_)
-        Image.fromarray(out.get_image()[:, :, ::-1]).save(f"data/08_reporting/{_experiment_id_}_train_sample_{_img_['image_id']}.png")
+    # # sanity check (train)
+    # train_metadata = MetadataCatalog.get(f"{_experiment_id_}_train")
+    # dataset_dicts = _handle_json_annotations(f"{_coco_path_}/train/_annotations.coco.json")
+    # for _img_ in random.sample(dataset_dicts, 3):
+    #     logger.debug(_img_)
+    #     im = cv2.imread(_img_["file_name"])
+    #     visualizer = Visualizer(im[:, :, ::-1], metadata=train_metadata, scale=0.5)
+    #     out = visualizer.draw_dataset_dict(_img_)
+    #     Image.fromarray(out.get_image()[:, :, ::-1]).save(f"data/08_reporting/{_experiment_id_}_train_sample_{_img_['image_id']}.png")
+
+    logger.debug(DatasetCatalog)
 
     return DatasetCatalog

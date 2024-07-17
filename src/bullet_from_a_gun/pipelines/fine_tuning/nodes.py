@@ -2,351 +2,122 @@
 This is a boilerplate pipeline 'fine_tuning'
 generated using Kedro 0.19.5
 """
-import sys  # noqa: I001
-sys.path.append("src/bullet_from_a_gun/pipelines/fine_tuning")
-
-import copy  # noqa: I001
-import io
+import json
 import logging
 import os
-from contextlib import redirect_stdout
-from pathlib import Path
+import random
 
+import cv2
 import numpy as np
-import torch
-# from coco_eval import CocoEvaluator
-# from coco_utils import get_coco_api_from_dataset
-# from engine import evaluate
+import requests
+from detectron2 import model_zoo
+from detectron2.config import get_cfg
+from detectron2.data import DatasetCatalog, MetadataCatalog, build_detection_test_loader
+from detectron2.data.datasets import load_coco_json, register_coco_instances
+from detectron2.engine import DefaultPredictor, DefaultTrainer
+from detectron2.evaluation import COCOEvaluator, inference_on_dataset
+from detectron2.structures import BoxMode
+from detectron2.utils.visualizer import ColorMode, Visualizer
 from PIL import Image
-from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
-from sklearn.metrics import average_precision_score, precision_score, recall_score  # noqa: F401
-from torch.utils.data import DataLoader, Subset
-from torchvision import transforms
-from torchvision.models.detection import (
-    FasterRCNN_ResNet50_FPN_V2_Weights,
-    SSD300_VGG16_Weights,  # noqa: F401
-    fasterrcnn_resnet50_fpn_v2,
-    ssd300_vgg16,  # noqa: F401
-)
-from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from ultralytics import YOLO
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
-class CocoEvaluator:
-    def __init__(self, coco_gt, iou_types):
-        if not isinstance(iou_types, (list, tuple)):
-            raise TypeError(f"This constructor expects iou_types of type list or tuple, instead got {type(iou_types)}")
-        self.coco_gt = copy.deepcopy(coco_gt)
-        self.iou_types = iou_types
-        self.coco_eval = {iou_type: COCOeval(coco_gt, iouType=iou_type) for iou_type in iou_types}
-        self.img_ids = []
-        self.eval_imgs = {k: [] for k in iou_types}
-
-    def update(self, predictions):
-        img_ids = list(np.unique(list(predictions.keys())))
-        self.img_ids.extend(img_ids)
-
-        for iou_type in self.iou_types:
-            results = self.prepare(predictions, iou_type)
-            with redirect_stdout(io.StringIO()):
-                coco_dt = self.coco_gt.loadRes(results) if results else COCO()
-            coco_eval = self.coco_eval[iou_type]
-            coco_eval.cocoDt = coco_dt
-            coco_eval.params.imgIds = list(set(self.img_ids) & set(self.coco_gt.getImgIds()))
-            coco_eval.evaluate()
-            self.eval_imgs[iou_type].append(coco_eval.evalImgs)
-
-    def synchronize_between_processes(self):
-        pass
-
-    def accumulate(self):
-        for coco_eval in self.coco_eval.values():
-            coco_eval.accumulate()
-
-    def summarize(self):
-        for coco_eval in self.coco_eval.values():
-            coco_eval.summarize()
-
-    def prepare(self, predictions, iou_type):
-        if iou_type == "bbox":
-            return self.prepare_for_coco_detection(predictions)
-        raise ValueError(f"Unknown iou type {iou_type}")
-
-    def prepare_for_coco_detection(self, predictions):
-        coco_results = []
-        for original_id, prediction in predictions.items():
-            if len(prediction["boxes"]) == 0:
-                continue
-
-            boxes = prediction["boxes"]
-            scores = prediction["scores"]
-            labels = prediction["labels"]
-
-            boxes = boxes.tolist()
-            scores = scores.tolist()
-            labels = labels.tolist()
-
-            coco_results.extend(
-                [
-                    {
-                        "image_id": original_id,
-                        "category_id": labels[k],
-                        "bbox": [box[0], box[1], box[2] - box[0], box[3] - box[1]],
-                        "score": scores[k],
-                    }
-                    for k, box in enumerate(boxes)
-                ]
-            )
-        return coco_results
-
-def get_coco_api_from_dataset(dataset):
-    """
-    Create a COCO API object from a dataset.
-    """
-    coco_ds = COCO()
-    ann_id = 1
-    dataset_dict = {"images": [], "categories": [], "annotations": []}
-    for img_idx in range(len(dataset)):
-        img, targets = dataset[img_idx]
-        image_id = int(targets["image_id"].item())
-        img_dict = {
-            "id": image_id,
-            "height": img.shape[1],
-            "width": img.shape[2],
-        }
-        dataset_dict["images"].append(img_dict)
-        bboxes = targets["boxes"]
-        labels = targets["labels"]
-        areas = targets["area"]
-        iscrowd = targets["iscrowd"]
-        for bbox, label, area, iscrowd_flag in zip(bboxes, labels, areas, iscrowd):
-            ann = {
-                "id": ann_id,
-                "image_id": image_id,
-                "bbox": bbox.tolist(),
-                "category_id": int(label.item()),
-                "area": float(area.item()),
-                "iscrowd": int(iscrowd_flag.item())
-            }
-            dataset_dict["annotations"].append(ann)
-            ann_id += 1
-    coco_ds.dataset = dataset_dict
-    coco_ds.createIndex()
-    return coco_ds
-
-
-class CustomCocoDataset(torch.utils.data.Dataset):
-    """
-    Custom dataset class for COCO dataset.
-    """
-    def __init__(self, root, annFile, transform=None):
-        self.root = root
-        self.coco = COCO(annFile)
-        self.ids = list(sorted(self.coco.imgs.keys()))
-        self.transform = transform
-
-    def __getitem__(self, idx):
-        img_id = self.ids[idx]
-        img_info = self.coco.loadImgs(img_id)[0]
-        path = img_info['file_name']
-        img = Image.open(os.path.join(self.root, path)).convert("RGB")
-
-        ann_ids = self.coco.getAnnIds(imgIds=img_id)
-        anns = self.coco.loadAnns(ann_ids)
-
-        boxes = []
-        labels = []
-        areas = []
-        iscrowd = []
-        for ann in anns:
-            xmin, ymin, width, height = ann['bbox']
-            xmax = xmin + width
-            ymax = ymin + height
-            boxes.append([xmin, ymin, xmax, ymax])
-            labels.append(ann['category_id'])
-            areas.append(width * height)
-            iscrowd.append(ann.get('iscrowd', 0))
-
-        boxes = torch.as_tensor(boxes, dtype=torch.float32)
-        labels = torch.as_tensor(labels, dtype=torch.int64)
-        areas = torch.as_tensor(areas, dtype=torch.float32)
-        iscrowd = torch.as_tensor(iscrowd, dtype=torch.int64)
-
-        target = {}
-        target["boxes"] = boxes
-        target["labels"] = labels
-        target["image_id"] = torch.tensor([img_id])
-        target["area"] = areas
-        target["iscrowd"] = iscrowd
-
-        if self.transform:
-            img = self.transform(img)
-
-        return img, target
-
-    def __len__(self):
-        return len(self.ids)
-
-
-def collate_fn(batch):
-    return tuple(zip(*batch))
-
-
-def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq):  # noqa: PLR0913
-    """
-    Train the model for one epoch.
-    """
-    model.train()
-    for i, (images, targets) in enumerate(data_loader):
-        _images_ = list(image.to(device) for image in images)
-        _targets_ = [{k: v.to(device) for k, v in t.items()} for t in targets]
-
-        loss_dict = model(_images_, _targets_)
-        losses = sum(loss for loss in loss_dict.values())
-
-        optimizer.zero_grad()
-        losses.backward()
-        optimizer.step()
-
-        if i % print_freq == 0:
-            logger.info(f"Epoch: [{epoch}], Step: [{i}/{len(data_loader)}], Loss: {losses.item()}")
-
-
-@torch.inference_mode()
-def evaluate_model(model, data_loader, device):
-    """
-    Evaluate the model on the dataset.
-    """
-    model.eval()
-    cpu_device = torch.device("cpu")
-    coco = get_coco_api_from_dataset(data_loader.dataset)
-    coco_evaluator = CocoEvaluator(coco, ["bbox"])
-
-    for images, targets in data_loader:
-        _images_ = list(img.to(device) for img in images)
-        _targets_ = [{k: v.to(cpu_device) for k, v in t.items()} for t in targets]
-        outputs = model(_images_)
-        outputs = [{k: v.to(cpu_device) for k, v in t.items()} for t in outputs]
-        res = {target["image_id"].item(): output for target, output in zip(_targets_, outputs)}
-        coco_evaluator.update(res)
-
-    coco_evaluator.accumulate()
-    coco_evaluator.summarize()
-
-    return coco_evaluator
-
-def run_torchvision_model(train_config: dict):
-    torch.cuda.set_device(0)
-    torch.cuda.empty_cache()
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Resize((640, 640))
-    ])
-
-    dataset = CustomCocoDataset(
-        root=train_config["model_config"]["coco_images"],
-        annFile=train_config["model_config"]["coco_annotations"],
-        transform=transform
-    )
-
-    train_indices = list(range(20))
-    eval_indices = list(range(20, 25))
-
-    train_dataset = Subset(dataset, train_indices)
-    eval_dataset = Subset(dataset, eval_indices)
-
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=train_config["model_config"]["batch"],
-        shuffle=True,
-        num_workers=4,
-        collate_fn=collate_fn
-    )
-
-    eval_loader = DataLoader(
-        eval_dataset,
-        batch_size=1,
-        shuffle=False,
-        num_workers=4,
-        collate_fn=collate_fn
-    )
-
-    model = fasterrcnn_resnet50_fpn_v2(weights=FasterRCNN_ResNet50_FPN_V2_Weights.DEFAULT)
-    in_features = model.roi_heads.box_predictor.cls_score.in_features
-    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, train_config["model_config"]["num_classes"])
-    model.to(device)
-
-    params = [p for p in model.parameters() if p.requires_grad]
-    optimizer = torch.optim.SGD(
-        params,
-        lr=train_config["model_config"]["learning_rate"],
-        momentum=0.9,
-        weight_decay=0.0005
-    )
-    lr_scheduler = torch.optim.lr_scheduler.StepLR(
-        optimizer,
-        step_size=3,
-        gamma=0.1
-    )
-
-    num_epochs = train_config["model_config"]["epochs"]
-
-    for epoch in range(num_epochs):
-        train_one_epoch(model, optimizer, train_loader, device, epoch, print_freq=10)
-        lr_scheduler.step()
-
-    logger.info("Evaluating on training set...")
-    evaluate_model(model, train_loader, device)
-    logger.info("Evaluating on validation set...")
-    evaluate_model(model, eval_loader, device)
-
-    run_path = Path("runs") / train_config["experiment_name"]
-    run_path.mkdir(parents=True, exist_ok=True)
-
-    # torch.save(model.state_dict(), run_path / "model.pth")
-
-    return "Model trained and evaluated successfully"
-
-
-def run_yolo_model(
-        train_config: dict
+def fine_tune_detectron2(
+        dataprep_params: dict,
+        fine_tuning_params: dict,
     ):
     """
-    Fine-tune a pre-trained YOLOv5 model on custom data.
+    `todo` documentation.
     """
-    torch.cuda.set_device(0)
-    torch.cuda.empty_cache()
-    model = YOLO(train_config["model_name"])
-    model.to("cuda")
-    logger.info(torch.cuda.is_available())
-    logger.info(torch.cuda.current_device())
-    logger.info(torch.cuda.get_device_name())
-    logger.info(torch.cuda.memory_allocated())
-    logger.info(torch.cuda.memory_reserved())
-    logger.info(torch.cuda.memory_summary())
+    _experiment_id_ = dataprep_params['experiment_id']
+    _coco_path_ = os.path.join(*dataprep_params['coco_data']['path'])
 
-    model.train(
-        name=train_config["experiment_name"],
-        data=train_config["model_config"]["data"],
-        epochs=train_config["model_config"]["epochs"],
-        batch=train_config["model_config"]["batch"],
-        imgsz=train_config["model_config"]["img_size"],
-        plots=True,
-        save=True,
-        val=True,
-        exist_ok=True,
-        seed=0,
-        cache=True,
-        # single_cls=True,
-        # iterations=3,
-        device=0,
-        cfg=train_config["model_config"]["cfg"],
+    logger.debug(dataprep_params)
+    logger.debug(fine_tuning_params)
+
+    # for _dataset_ in dataprep_params['coco_data']['datasets']:
+    for _dataset_ in ["train", "valid"]:
+        logger.debug(f"reading {_dataset_} data")
+        register_coco_instances(
+            f"{_experiment_id_}_{_dataset_}",
+            {},
+            os.path.join(_coco_path_, _dataset_, "_annotations.coco.json"),
+            os.path.join(_coco_path_, _dataset_)
+        )
+        # MetadataCatalog.get(f"{_experiment_id_}_{_dataset_}").set(thing_classes=["bullets"])
+        # MetadataCatalog.get(f"{_experiment_id_}_{_dataset_}").thing_classes = ["creatures", "fish", "jellyfish", "penguin", "puffin", "shark", "starfish", "stingray"]
+        # MetadataCatalog.get(f"{_experiment_id_}_{_dataset_}").thing_classes = ["none", "bullets"]
+
+    cfg = get_cfg()
+    config_url = model_zoo.get_config_file(fine_tuning_params["pretrained_model_config"])
+    cfg.merge_from_file(config_url)
+
+    cfg.DATASETS.TRAIN = (f"{_experiment_id_}_train",)
+    cfg.DATASETS.TEST = (f"{_experiment_id_}_valid",)
+    cfg.DATALOADER.NUM_WORKERS = fine_tuning_params["num_workers"]
+    cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(fine_tuning_params["pretrained_model_weights"])
+    cfg.SOLVER.IMS_PER_BATCH = fine_tuning_params["ims_per_batch"]
+    cfg.SOLVER.BASE_LR = fine_tuning_params["base_lr"]
+    cfg.SOLVER.MAX_ITER = fine_tuning_params["max_iter"]
+    cfg.SOLVER.STEPS = fine_tuning_params["steps"]
+    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = fine_tuning_params["batch_size_per_image"]
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = fine_tuning_params["num_classes"]
+
+    os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+    # trainer = DefaultTrainer(cfg)
+    # trainer.resume_or_load(resume=False)
+    # trainer.train()
+
+    cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = fine_tuning_params["score_thresh_test"]
+    predictor = DefaultPredictor(cfg)
+
+    # sanity check (train)
+    sample_counter = 0
+    dataset_dicts = load_coco_json(
+        os.path.join(_coco_path_, "train", "_annotations.coco.json"),
+        os.path.join(_coco_path_, "train")
     )
-    return "Model trained and saved successfully"
+    metadata = MetadataCatalog.get(f"{_experiment_id_}_train")
+    for _img_ in random.sample(dataset_dicts, 3):
+        logger.debug(_img_)
+        im = cv2.imread(_img_["file_name"])
+        outputs = predictor(im)
+        logger.debug(outputs)
+        v = Visualizer(im[:, :, ::-1], metadata=metadata, scale=1.2)
+        v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
+        Image.fromarray(
+            cv2.cvtColor(v.get_image()[:, :, ::-1], cv2.COLOR_BGR2RGB)
+        ).save(f"data/08_reporting/{_experiment_id_}_train_prediction_sample_{sample_counter}.png")
+        sample_counter += 1
 
+    # sanity check (valid)
+    sample_counter = 0
+    dataset_dicts = load_coco_json(
+        os.path.join(_coco_path_, "valid", "_annotations.coco.json"),
+        os.path.join(_coco_path_, "valid")
+    )
+    metadata = MetadataCatalog.get(f"{_experiment_id_}_valid")
+    for _img_ in random.sample(dataset_dicts, 3):
+        logger.debug(_img_)
+        im = cv2.imread(_img_["file_name"])
+        outputs = predictor(im)
+        logger.debug(outputs)
+        v = Visualizer(im[:, :, ::-1], metadata=metadata, scale=1.2)
+        v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
+        Image.fromarray(
+            cv2.cvtColor(v.get_image()[:, :, ::-1], cv2.COLOR_BGR2RGB)
+        ).save(f"data/08_reporting/{_experiment_id_}_valid_prediction_sample_{sample_counter}.png")
+        sample_counter += 1
+
+    # evaluator = COCOEvaluator(
+    #     f"{_experiment_id_}_valid",
+    #     cfg,
+    #     False,
+    #     output_dir=cfg.OUTPUT_DIR
+    # )
+    # val_loader = build_detection_test_loader(cfg, f"{_experiment_id_}_valid")
+
+    return list()
