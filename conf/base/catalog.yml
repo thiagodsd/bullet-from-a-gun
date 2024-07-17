@@ -1,10 +1,22 @@
-#
-#
-#
-gunshot.processed_dataset:
-    type: MemoryDataset
-    copy_mode: assign
+_template_json: &template_json
+    type: partitions.IncrementalDataset
+    path: data/06_models/tuned/
+    dataset:
+        type: json.JSONDataset
+        save_args:
+            indent: 4
+    metadata:
+        kedro-viz:
+            layer: models
 
+# 
+# DETECTRON2
+#
+detectron2.rccn_101.fine_tuning_results:
+    <<: *template_json
+
+detectron2.rccn_aumented.fine_tuning_results:
+    <<: *template_json
 
 # 
 # GENERIC
@@ -40,70 +52,3 @@ generic.object_detected_metadata:
     metadata:
         kedro-viz:
             layer: model output
-
-# 
-# GUNSHOTS (OLD)
-# 
-raw_gunshots_images:
-    type: partitions.PartitionedDataset
-    path: data/01_raw/gunshots/
-    dataset:
-        type: pillow.ImageDataset
-    filename_suffix: '.JPG'
-    metadata:
-        kedro-viz:
-            layer: raw
-
-intermediate_circle_images:
-    type: partitions.PartitionedDataset
-    path: data/02_intermediate/gunshots/circle/
-    dataset:
-        type: pillow.ImageDataset
-    filename_suffix: '.JPG'
-    metadata:
-        kedro-viz:
-            layer: intermediate
-
-intermediate_vertical_images:
-    type: partitions.PartitionedDataset
-    path: data/02_intermediate/gunshots/vertical/
-    dataset:
-        type: pillow.ImageDataset
-    filename_suffix: '.JPG'
-    metadata:
-        kedro-viz:
-            layer: intermediate
-
-primary_circle_coco_annotations:
-    type: json.JSONDataset
-    filepath: data/03_primary/gunshots/circle/coco_format/annotations/instances.json
-    metadata:
-        kedro-viz:
-            layer: primary
-
-primary_circle_yolov5_train_images:
-    type: partitions.PartitionedDataset
-    path: data/03_primary/gunshots/circle/yolov5_format/images/train/
-    dataset:
-        type: pillow.ImageDataset
-    filename_suffix: '.jpg'
-    metadata:
-        kedro-viz:
-            layer: primary
-
-primary_circle_yolov5_train_annotations:
-    type: partitions.PartitionedDataset
-    path: data/03_primary/gunshots/circle/yolov5_format/labels/train/
-    dataset:
-        type: text.TextDataset
-    filename_suffix: '.txt'
-    metadata:
-        kedro-viz:
-            layer: primary
-
-primary_circle_yolov5_train_config:
-    type: json.JSONDataset
-    filepath: data/03_primary/gunshots/circle/yolov5_format/data_config.yaml
-    metadata:
-        kedro-viz:
-            layer: primary

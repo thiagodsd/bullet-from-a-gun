@@ -3,9 +3,8 @@ from typing import Dict
 
 from kedro.pipeline import Pipeline
 
-from .pipelines.data_preparation import create_pipeline as data_preparation_pipeline
-from .pipelines.evaluation import create_pipeline as evaluation_pipeline
-from .pipelines.fine_tuning import create_pipeline as fine_tuning_pipeline
+from .pipelines.detectron2 import create_pipeline as detectron2_pipeline
+from .pipelines.mask_rcnn import create_pipeline as mask_rcnn_pipeline
 
 
 def register_pipelines() -> Dict[str, Pipeline]:
@@ -14,12 +13,10 @@ def register_pipelines() -> Dict[str, Pipeline]:
     Returns:
         A mapping from pipeline names to ``Pipeline`` objects.
     """
-    data_preparation = data_preparation_pipeline()
-    fine_tuning = fine_tuning_pipeline()
-    evaluation = evaluation_pipeline()
+    detectron2 = detectron2_pipeline()
+    mask_rcnn = mask_rcnn_pipeline()
     return {
-        "__default__"      : data_preparation + fine_tuning + evaluation,
-        "data_preparation" : data_preparation,
-        "fine_tuning"      : fine_tuning,
-        "evaluation"       : evaluation,
+        "__default__"      : detectron2 + mask_rcnn,
+        "detectron2" : detectron2,
+        "mask_rcnn"  : mask_rcnn,
     }
