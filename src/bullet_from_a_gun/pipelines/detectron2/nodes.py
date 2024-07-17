@@ -87,10 +87,6 @@ def fine_tune_detectron2(
     trainer.resume_or_load(resume=False)
     trainer.train()
 
-    # saving
-    logger.info("saving...")
-    cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, f"{_experiment_id_}_model_final.pth")
-
     return results
 
 

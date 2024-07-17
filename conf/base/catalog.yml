@@ -13,10 +13,10 @@ _template_json: &template_json
 # 
 # DETECTRON2
 #
-detectron2.rccn_101_v1.fine_tuning_results:
+detectron2.rccn_101_conf1_v1.fine_tuning_results:
     <<: *template_json
 
-detectron2.rccn_aumented_v1.fine_tuning_results:
+detectron2.rccn_101_conf2_v1.fine_tuning_results:
     <<: *template_json
 
 # 
