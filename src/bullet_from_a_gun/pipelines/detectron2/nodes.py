@@ -8,8 +8,7 @@ import random
 
 import cv2
 import numpy as np
-
-# import requests
+import torch
 from detectron2 import model_zoo
 from detectron2.config import get_cfg
 from detectron2.data import DatasetCatalog, MetadataCatalog, build_detection_test_loader
@@ -31,16 +30,23 @@ def fine_tune_detectron2(
     """
     `todo` documentation.
     """
+    np.random.seed(0)
+    torch.manual_seed(0)
+    random.seed(0)
+    np.set_printoptions(precision=5)
+
     results = dict()
+
     _experiment_id_ = dataprep_params['experiment_id']
+
     _coco_path_ = os.path.join(*dataprep_params['coco_data']['path'])
+    _output_path_ = os.path.join(*fine_tuning_params["path"])
 
     results[_experiment_id_] = dataprep_params.copy()
     results[_experiment_id_].update(fine_tuning_params)
 
-    logger.debug(dataprep_params)
-    logger.debug(fine_tuning_params)
-
+    # registering datasets
+    logger.info("registering datasets...")
     for _dataset_ in ["train", "valid"]:
         logger.debug(f"reading {_dataset_} data")
         register_coco_instances(
@@ -50,7 +56,10 @@ def fine_tune_detectron2(
             os.path.join(_coco_path_, _dataset_)
         )
 
+    # setting up configuration
+    logger.info("setting up configuration...")
     cfg = get_cfg()
+
     config_url = model_zoo.get_config_file(fine_tuning_params["pretrained_model_config"])
     cfg.merge_from_file(config_url)
 
@@ -64,12 +73,22 @@ def fine_tune_detectron2(
     cfg.SOLVER.STEPS = fine_tuning_params["steps"]
     cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = fine_tuning_params["batch_size_per_image"]
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = fine_tuning_params["num_classes"]
+    cfg.OUTPUT_DIR = os.path.join(_output_path_, _experiment_id_)
 
     os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
-    # trainer = DefaultTrainer(cfg)
-    # trainer.resume_or_load(resume=False)
-    # trainer.train()
 
+    results[_experiment_id_]["cfg"] = dict(cfg)
+
+    logger.debug(results)
+
+    # training
+    logger.info("training...")
+    trainer = DefaultTrainer(cfg)
+    trainer.resume_or_load(resume=False)
+    trainer.train()
+
+    # saving
+    logger.info("saving...")
     cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, f"{_experiment_id_}_model_final.pth")
 
     return results

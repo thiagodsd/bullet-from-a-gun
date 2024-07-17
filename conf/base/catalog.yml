@@ -5,6 +5,7 @@ _template_json: &template_json
         type: json.JSONDataset
         save_args:
             indent: 4
+    filename_suffix: '.json'
     metadata:
         kedro-viz:
             layer: models
@@ -12,10 +13,10 @@ _template_json: &template_json
 # 
 # DETECTRON2
 #
-detectron2.rccn_101.fine_tuning_results:
+detectron2.rccn_101_v1.fine_tuning_results:
     <<: *template_json
 
-detectron2.rccn_aumented.fine_tuning_results:
+detectron2.rccn_aumented_v1.fine_tuning_results:
     <<: *template_json
 
 # 

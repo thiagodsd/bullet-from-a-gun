@@ -36,18 +36,20 @@ def create_pipeline(**kwargs) -> Pipeline:
         ),
     ])
 
-    # gunshot :: detectron2 :: rccn_101
-    detectron2_rccn_101 = pipeline(
+    # gunshot :: detectron2 :: rccn_101_v1
+    detectron2_rccn_101_v1 = pipeline(
         pipe=template_fine_tuning,
-        namespace="detectron2.rccn_101",
+        namespace="detectron2.rccn_101_v1",
     )
-    # kedro run --to-nodes=detectron2.rccn_101.evaluate_detectron2
+    # kedro run -n detectron2.rccn_101_v1.fine_tune_detectron2
+    # kedro run -n detectron2.rccn_101_v1.evaluate_detectron2
 
-    # gunshot :: detectron2 :: rccn_aumented
-    detectron2_rccn_aumented = pipeline(
+    # gunshot :: detectron2 :: rccn_aumented_v1
+    detectron2_rccn_aumented_v1 = pipeline(
         pipe=template_fine_tuning,
-        namespace="detectron2.rccn_aumented",
+        namespace="detectron2.rccn_aumented_v1",
     )
-    # kedro run --to-nodes=detectron2.rccn_aumented.evaluate_detectron2
+    # kedro run -n detectron2.rccn_aumented_v1.fine_tune_detectron2
+    # kedro run -n detectron2.rccn_aumented_v1.evaluate_detect
 
-    return detectron2_rccn_101 + detectron2_rccn_aumented
+    return detectron2_rccn_101_v1 + detectron2_rccn_aumented_v1

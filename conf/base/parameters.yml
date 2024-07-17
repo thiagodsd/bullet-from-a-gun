@@ -1,39 +1,45 @@
 detectron2:
     #
-    rccn_101:
+    rccn_101_v1:
         dataprep_params:
-            experiment_id: "detectron2_rccn_101"
+            experiment_id: "detectron2_rccn_101_v1"
             coco_data:
                 path:
                     - data
                     - 05_model_input
-                    - bullets
+                    - gunshots
                     - coco
+                    - v1
                 datasets:
                     - train
                     - valid
                     - test
         fine_tuning_params:
+            path:
+                - data
+                - 06_models
+                - tuned
             pretrained_model_config: COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml
             num_workers: 2
             pretrained_model_weights: COCO-Detection/faster_rcnn_R_101_FPN_3x.yaml
             ims_per_batch: 2
             base_lr: 0.00125
-            max_iter: 1600
+            max_iter: 256
             steps: []
             batch_size_per_image: 512
             num_classes: 2
             score_thresh_test: 0.5
     #
-    rccn_aumented:
+    rccn_aumented_v1:
         dataprep_params:
-            experiment_id: "detectron2_rccn_aumented"
+            experiment_id: "detectron2_rccn_aumented_v1"
             coco_data:
                 path:
                     - data
                     - 05_model_input
-                    - bullets
+                    - gunshots
                     - coco
+                    - v1
                 datasets:
                     - train
                     - valid
