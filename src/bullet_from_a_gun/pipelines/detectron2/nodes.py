@@ -5,9 +5,12 @@ generated using Kedro 0.19.5
 import logging
 import os
 import random
+from typing import Union
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
+import supervision as sv
 import torch
 from detectron2 import model_zoo
 from detectron2.config import get_cfg
@@ -86,7 +89,10 @@ def fine_tune_detectron2(
     trainer.resume_or_load(resume=False)
     trainer.train()
 
-    torch.save(trainer.model.state_dict(), os.path.join(cfg.OUTPUT_DIR, f"{_experiment_id_}_model_final.pth"))
+    torch.save(
+        trainer.model.state_dict(),
+        os.path.join(cfg.OUTPUT_DIR, f"{_experiment_id_}_model_final.pth")
+    )
 
     return results
 
@@ -95,7 +101,7 @@ def evaluate_detectron2(
         dataprep_params: dict,
         fine_tuning_params: dict,
         fine_tuning_results:dict
-    ) -> dict:
+    ) -> Union[dict, dict]:
     """
     `todo` documentation.
     """
@@ -104,6 +110,7 @@ def evaluate_detectron2(
     random.seed(0)
     np.set_printoptions(precision=5)
 
+    plots = dict()
     results = dict()
 
     _experiment_id_ = dataprep_params['experiment_id']
@@ -112,6 +119,8 @@ def evaluate_detectron2(
 
     if _experiment_id_ not in results:
         results[_experiment_id_] = dict()
+    if _experiment_id_ not in plots:
+        plots[_experiment_id_] = dict()
 
     # registering datasets
     logger.info("registering datasets...")
@@ -150,7 +159,7 @@ def evaluate_detectron2(
             # logger.debug(_img_)
             im = cv2.imread(_img_["file_name"])
             outputs = predictor(im)
-            logger.debug(outputs)
+            # logger.debug(outputs)
             v = Visualizer(
                 im[:, :, ::-1],
                 metadata=MetadataCatalog.get(f"{_experiment_id_}_{_SET_}"),
@@ -173,62 +182,25 @@ def evaluate_detectron2(
             f"{_experiment_id_}_{_SET_}"
         )
         _results_ = inference_on_dataset(predictor.model, loader, evaluator)
-        logger.debug(_results_)
+        # logger.debug(_results_)
         results[_experiment_id_][_SET_] = _results_
+        # confusion matrix
+        _dataset_ = sv.DetectionDataset.from_coco(
+            os.path.join(_coco_path_, _SET_),
+            os.path.join(_coco_path_, _SET_, "_annotations.coco.json"),
+        )
+        def _confusion_matrix_callback(image:np.ndarray) -> sv.Detections:
+            return sv.Detections.from_detectron2(
+                predictor(image)
+            )
+        confusion_matrix = sv.ConfusionMatrix.benchmark(
+            _dataset_,
+            _confusion_matrix_callback
+        )
+        _confusion_matrix_ = confusion_matrix.matrix
+        # logger.debug(_confusion_matrix_)
+        results[_experiment_id_][_SET_]["confusion_matrix"] = _confusion_matrix_.tolist()
+        # plotting confusion matrix
+        plots[_experiment_id_][f"{_SET_}_confusion_matrix.png"] = confusion_matrix.plot()
 
-
-
-
-
-
-
-
-
-
-
-    # # sanity check (train)
-    # sample_counter = 0
-    # dataset_dicts = load_coco_json(
-    #     os.path.join(_coco_path_, "train", "_annotations.coco.json"),
-    #     os.path.join(_coco_path_, "train")
-    # )
-    # metadata = MetadataCatalog.get(f"{_experiment_id_}_train")
-    # for _img_ in random.sample(dataset_dicts, 3):
-    #     logger.debug(_img_)
-    #     im = cv2.imread(_img_["file_name"])
-    #     outputs = predictor(im)
-    #     logger.debug(outputs)
-    #     v = Visualizer(im[:, :, ::-1], metadata=metadata, scale=1.2)
-    #     v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
-    #     Image.fromarray(
-    #         cv2.cvtColor(v.get_image()[:, :, ::-1], cv2.COLOR_BGR2RGB)
-    #     ).save(f"data/08_reporting/{_experiment_id_}_train_prediction_sample_{sample_counter}.png")
-    #     sample_counter += 1
-
-    # # sanity check (valid)
-    # sample_counter = 0
-    # dataset_dicts = load_coco_json(
-    #     os.path.join(_coco_path_, "valid", "_annotations.coco.json"),
-    #     os.path.join(_coco_path_, "valid")
-    # )
-    # metadata = MetadataCatalog.get(f"{_experiment_id_}_valid")
-    # for _img_ in random.sample(dataset_dicts, 3):
-    #     logger.debug(_img_)
-    #     im = cv2.imread(_img_["file_name"])
-    #     outputs = predictor(im)
-    #     logger.debug(outputs)
-    #     v = Visualizer(im[:, :, ::-1], metadata=metadata, scale=1.2)
-    #     v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
-    #     Image.fromarray(
-    #         cv2.cvtColor(v.get_image()[:, :, ::-1], cv2.COLOR_BGR2RGB)
-    #     ).save(f"data/08_reporting/{_experiment_id_}_valid_prediction_sample_{sample_counter}.png")
-    #     sample_counter += 1
-
-    # evaluator = COCOEvaluator(
-    #     f"{_experiment_id_}_valid",
-    #     cfg,
-    #     False,
-    #     output_dir=cfg.OUTPUT_DIR
-    # )
-    # val_loader = build_detection_test_loader(cfg, f"{_experiment_id_}_valid")
-    return results
+    return results, plots

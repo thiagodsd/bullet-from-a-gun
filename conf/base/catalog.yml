@@ -22,17 +22,32 @@ _template_evaluation_json: &template_evaluation_json
         kedro-viz:
             layer: models
 
+_template_evaluation_matplotlib: &template_evaluation_matplotlib
+    type: partitions.IncrementalDataset
+    path: data/08_reporting/plots/
+    dataset:
+        type: matplotlib.MatplotlibWriter
+    metadata:
+        kedro-viz:
+            layer: reporting
+
+
 # 
 # DETECTRON2
 #
+# rccn_101_conf1_v1
 detectron2.rccn_101_conf1_v1.fine_tuning_results:
-    <<: *template_fine_tuning_json
-
-detectron2.rccn_101_conf2_v1.fine_tuning_results:
     <<: *template_fine_tuning_json
 
 detectron2.rccn_101_conf1_v1.evaluation_results:
     <<: *template_evaluation_json
+
+detectron2.rccn_101_conf1_v1.evaluation_plots:
+    <<: *template_evaluation_matplotlib
+
+# rccn_101_conf2_v1
+detectron2.rccn_101_conf2_v1.fine_tuning_results:
+    <<: *template_fine_tuning_json
 
 detectron2.rccn_101_conf2_v1.evaluation_results:
     <<: *template_evaluation_json
