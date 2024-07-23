@@ -1,6 +1,18 @@
-_template_json: &template_json
+_template_fine_tuning_json: &template_fine_tuning_json
     type: partitions.IncrementalDataset
     path: data/06_models/tuned/
+    dataset:
+        type: json.JSONDataset
+        save_args:
+            indent: 4
+    filename_suffix: '.json'
+    metadata:
+        kedro-viz:
+            layer: models
+
+_template_evaluation_json: &template_evaluation_json
+    type: partitions.IncrementalDataset
+    path: data/06_models/eval/
     dataset:
         type: json.JSONDataset
         save_args:
@@ -14,10 +26,17 @@ _template_json: &template_json
 # DETECTRON2
 #
 detectron2.rccn_101_conf1_v1.fine_tuning_results:
-    <<: *template_json
+    <<: *template_fine_tuning_json
 
 detectron2.rccn_101_conf2_v1.fine_tuning_results:
-    <<: *template_json
+    <<: *template_fine_tuning_json
+
+detectron2.rccn_101_conf1_v1.evaluation_results:
+    <<: *template_evaluation_json
+
+detectron2.rccn_101_conf2_v1.evaluation_results:
+    <<: *template_evaluation_json
+
 
 # 
 # GENERIC

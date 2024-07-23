@@ -97,8 +97,7 @@ or to evaluate the model using the `detectron2` evaluation script:
 kedro run -n detectron2.rccn_101_conf1_v1.fine_tune_detectron2
 ```
 
-The evaluation results will be saved at the `data/06_models/output/experiment_id/eval` folder.
-
+The evaluation results will be saved at the `data/06_models/output/experiment_id/evaluation` and `data/07_model_output/experiment_id` folders.
 
 ## Notes on Object Detection Models
 

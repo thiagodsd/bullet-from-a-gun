@@ -31,7 +31,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 "params:fine_tuning_params",
                 "fine_tuning_results",
             ],
-            outputs=None,
+            outputs="evaluation_results",
             name="evaluate_detectron2",
         ),
     ])
