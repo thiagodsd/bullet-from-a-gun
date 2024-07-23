@@ -42,7 +42,7 @@ def create_pipeline(**kwargs) -> Pipeline:
         namespace="detectron2.rccn_101_conf1_v1",
     )
     # kedro run -n detectron2.rccn_101_conf1_v1.fine_tune_detectron2
-    # kedro run -n detectron2.rccn_101_conf1_v1.evaluate_detect
+    # kedro run -n detectron2.rccn_101_conf1_v1.evaluate_detectron2
 
     # gunshot :: detectron2 :: rccn_101_conf2_v1
     detectron2_rccn_101_conf2_v1 = pipeline(
@@ -50,6 +50,6 @@ def create_pipeline(**kwargs) -> Pipeline:
         namespace="detectron2.rccn_101_conf2_v1",
     )
     # kedro run -n detectron2.rccn_101_conf2_v1.fine_tune_detectron2
-    # kedro run -n detectron2.rccn_101_conf2_v1.evaluate_detect
+    # kedro run -n detectron2.rccn_101_conf2_v1.evaluate_detectron2
 
     return detectron2_rccn_101_conf1_v1 + detectron2_rccn_101_conf2_v1
