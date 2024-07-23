@@ -5553,6 +5553,30 @@ sanic = ["sanic (>=20.12.2)"]
 starlite = ["starlite (>=1.48.0)"]
 
 [[package]]
+name = "supervision"
+version = "0.22.0"
+description = "A set of easy-to-use utils that will come in handy in any Computer Vision project"
+optional = false
+python-versions = "<4.0,>=3.8"
+files = [
+    {file = "supervision-0.22.0-py3-none-any.whl", hash = "sha256:f6125337fcaca8cc15bd0b14eedfc6072c2a9944889acc24106cc8f108a56775"},
+    {file = "supervision-0.22.0.tar.gz", hash = "sha256:fdb845d4884c4ccfafc1198cd88a08539cfa5f9eeba729de645e17d5e9b6560a"},
+]
+
+[package.dependencies]
+defusedxml = ">=0.7.1,<0.8.0"
+matplotlib = ">=3.6.0"
+numpy = ">=1.21.2"
+opencv-python-headless = ">=4.5.5.64"
+pillow = ">=9.4"
+pyyaml = ">=5.3"
+scipy = {version = ">=1.10.0,<2.0.0", markers = "python_version >= \"3.9\""}
+
+[package.extras]
+assets = ["requests (>=2.26.0,<=2.32.3)", "tqdm (>=4.62.3,<=4.66.4)"]
+desktop = ["opencv-python (>=4.5.5.64)"]
+
+[[package]]
 name = "sympy"
 version = "1.12"
 description = "Computer algebra system (CAS) in Python"
@@ -6627,4 +6651,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2f449c60386a1f91051d731f80b6842414c7fd5684a5948ed4d907d9c9f1d8c5"
+content-hash = "9dcf7a242a65fbe7167af459317c5c6beeafb68e66d96cedd23207c55081f4bb"

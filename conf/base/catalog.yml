@@ -1,22 +1,79 @@
-_template_json: &template_json
+_template_fine_tuning_json: &template_fine_tuning_json
     type: partitions.IncrementalDataset
     path: data/06_models/tuned/
     dataset:
         type: json.JSONDataset
         save_args:
             indent: 4
+    filename_suffix: '.json'
     metadata:
         kedro-viz:
             layer: models
 
+_template_evaluation_json: &template_evaluation_json
+    type: partitions.IncrementalDataset
+    path: data/06_models/eval/
+    dataset:
+        type: json.JSONDataset
+        save_args:
+            indent: 4
+    filename_suffix: '.json'
+    metadata:
+        kedro-viz:
+            layer: models
+
+_template_evaluation_matplotlib: &template_evaluation_matplotlib
+    type: partitions.IncrementalDataset
+    path: data/08_reporting/plots/
+    dataset:
+        type: matplotlib.MatplotlibWriter
+    metadata:
+        kedro-viz:
+            layer: reporting
+
+
 # 
 # DETECTRON2
 #
-detectron2.rccn_101.fine_tuning_results:
-    <<: *template_json
+# rccn_101_conf1_v1
+detectron2.rccn_101_conf1_v1.fine_tuning_results:
+    <<: *template_fine_tuning_json
 
-detectron2.rccn_aumented.fine_tuning_results:
-    <<: *template_json
+detectron2.rccn_101_conf1_v1.evaluation_results:
+    <<: *template_evaluation_json
+
+detectron2.rccn_101_conf1_v1.evaluation_plots:
+    <<: *template_evaluation_matplotlib
+
+# rccn_101_conf2_v1
+detectron2.rccn_101_conf2_v1.fine_tuning_results:
+    <<: *template_fine_tuning_json
+
+detectron2.rccn_101_conf2_v1.evaluation_results:
+    <<: *template_evaluation_json
+
+detectron2.rccn_101_conf2_v1.evaluation_plots:
+    <<: *template_evaluation_matplotlib
+
+# rccn_101_conf3_v1
+detectron2.rccn_101_conf3_v1.fine_tuning_results:
+    <<: *template_fine_tuning_json
+
+detectron2.rccn_101_conf3_v1.evaluation_results:
+    <<: *template_evaluation_json
+
+detectron2.rccn_101_conf3_v1.evaluation_plots:
+    <<: *template_evaluation_matplotlib
+
+# mask_rccn_50_conf1_v1
+detectron2.mask_rccn_50_conf1_v1.fine_tuning_results:
+    <<: *template_fine_tuning_json
+
+detectron2.mask_rccn_50_conf1_v1.evaluation_results:
+    <<: *template_evaluation_json
+
+detectron2.mask_rccn_50_conf1_v1.evaluation_plots:
+    <<: *template_evaluation_matplotlib
 
 # 
 # GENERIC

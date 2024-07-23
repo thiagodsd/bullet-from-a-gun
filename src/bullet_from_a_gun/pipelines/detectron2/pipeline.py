@@ -6,7 +6,7 @@ generated using Kedro 0.19.5
 from kedro.pipeline import Pipeline, node
 from kedro.pipeline.modular_pipeline import pipeline
 
-from .nodes import evaluate_detectron2, fine_tune_detectron2
+from .nodes import compress_results, evaluate_detectron2, fine_tune_detectron2
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -31,23 +31,57 @@ def create_pipeline(**kwargs) -> Pipeline:
                 "params:fine_tuning_params",
                 "fine_tuning_results",
             ],
-            outputs=None,
+            outputs=[
+                "evaluation_results",
+                "evaluation_plots",
+            ],
             name="evaluate_detectron2",
+        ),
+        node(
+            func=compress_results,
+            inputs=[
+                "params:dataprep_params",
+                "params:fine_tuning_params",
+            ],
+            outputs=None,
+            name="compress_results",
         ),
     ])
 
-    # gunshot :: detectron2 :: rccn_101
-    detectron2_rccn_101 = pipeline(
+    # gunshot :: detectron2 :: rccn_101_conf1_v1
+    detectron2_rccn_101_conf1_v1 = pipeline(
         pipe=template_fine_tuning,
-        namespace="detectron2.rccn_101",
+        namespace="detectron2.rccn_101_conf1_v1",
     )
-    # kedro run --to-nodes=detectron2.rccn_101.evaluate_detectron2
+    # kedro run -n detectron2.rccn_101_conf1_v1.fine_tune_detectron2
+    # kedro run -n detectron2.rccn_101_conf1_v1.evaluate_detectron2
+    # kedro run -n detectron2.rccn_101_conf1_v1.compress_results
 
-    # gunshot :: detectron2 :: rccn_aumented
-    detectron2_rccn_aumented = pipeline(
+    # gunshot :: detectron2 :: rccn_101_conf2_v1
+    detectron2_rccn_101_conf2_v1 = pipeline(
         pipe=template_fine_tuning,
-        namespace="detectron2.rccn_aumented",
+        namespace="detectron2.rccn_101_conf2_v1",
     )
-    # kedro run --to-nodes=detectron2.rccn_aumented.evaluate_detectron2
+    # kedro run -n detectron2.rccn_101_conf2_v1.fine_tune_detectron2
+    # kedro run -n detectron2.rccn_101_conf2_v1.evaluate_detectron2
+    # kedro run -n detectron2.rccn_101_conf2_v1.compress_results
 
-    return detectron2_rccn_101 + detectron2_rccn_aumented
+    # gunshot :: detectron2 :: rccn_101_conf3_v1
+    detectron2_rccn_101_conf3_v1 = pipeline(
+        pipe=template_fine_tuning,
+        namespace="detectron2.rccn_101_conf3_v1",
+    )
+    # kedro run -n detectron2.rccn_101_conf3_v1.fine_tune_detectron2
+    # kedro run -n detectron2.rccn_101_conf3_v1.evaluate_detectron2
+    # kedro run -n detectron2.rccn_101_conf3_v1.compress_results
+
+    # gunshot :: detectron2 :: rccn_101_conf2_v1
+    detectron2_mask_rccn_50_conf1_v1 = pipeline(
+        pipe=template_fine_tuning,
+        namespace="detectron2.mask_rccn_50_conf1_v1",
+    )
+    # kedro run -n detectron2.mask_rccn_50_conf1_v1.fine_tune_detectron2
+    # kedro run -n detectron2.mask_rccn_50_conf1_v1.evaluate_detectron2
+    # kedro run -n detectron2.mask_rccn_50_conf1_v1.compress_results
+
+    return detectron2_rccn_101_conf1_v1 + detectron2_rccn_101_conf2_v1 + detectron2_rccn_101_conf3_v1 + detectron2_rccn_101_conf2_v1 + detectron2_mask_rccn_50_conf1_v1
