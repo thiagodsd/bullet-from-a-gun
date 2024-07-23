@@ -29,9 +29,17 @@ The first step in the data preparation process was to annotate the gunshot holes
 Images were cropped in bulks of 50 images using the web tool [Bulk Image Crop](https://bulkimagecrop.com/), by uploading them in the tool and setting the target aspect ratio to 1:1. Then all images were previewed and the ones that were not cropped correctly were manually cropped using the same tool.
 
 # Development Notes
-As a [Kedro](https://kedro.org/) project, this repository is structured in a modular and reproducible way. An experiment execution follows the steps below:
 
-## 1. Choose an Experiment
+## Experimentation
+As a [Kedro](https://kedro.org/) project, this repository is structured in a modular and reproducible way. A tl;dr manner to execute an experiment is to run the following command:
+
+```sh
+kedro run --to-nodes=detectron2.rccn_101_conf1_v1.evaluate_detectron2
+```
+
+This command will execute the following steps, under the hood:
+
+### 1. Choose an Experiment
 The file `/conf/base/parameters.yml` contains the configuration for the experiments. As an example:
 
 ```yaml
@@ -74,7 +82,7 @@ Here, `detectron2` is the object detection framework, `rccn_101_conf1_v1` is the
 
 The `dataprep_params` section contains the parameters for the dataset preparation, and the `fine_tuning_params` section contains the parameters for the model fine-tuning.
 
-## 2. Run the Experiment
+### 2. Run the Experiment
 To run the experiment, execute the following command:
 
 ```sh
@@ -83,7 +91,7 @@ kedro run -n detectron2.rccn_101_conf1_v1.fine_tune_detectron2
 
 The data, generally at the `data/05_model_input` folder, will be prepared and the model will be fine-tuned. The results will be saved at the `data/06_models/output/experiment_id` folder.
 
-## 3. Evaluate the Experiment
+### 3. Evaluate the Experiment
 
 There is the option to visualize the results of the experiment via tensorboard:
 

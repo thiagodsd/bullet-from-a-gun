@@ -46,7 +46,7 @@ def fine_tune_detectron2(
 
     # registering datasets
     logger.info("registering datasets...")
-    for _dataset_ in ["train", "valid"]:
+    for _dataset_ in ["train", "valid", "test"]:
         logger.debug(f"reading {_dataset_} data")
         register_coco_instances(
             f"{_experiment_id_}_{_dataset_}",
@@ -86,6 +86,8 @@ def fine_tune_detectron2(
     trainer.resume_or_load(resume=False)
     trainer.train()
 
+    torch.save(trainer.model.state_dict(), os.path.join(cfg.OUTPUT_DIR, f"{_experiment_id_}_model_final.pth"))
+
     return results
 
 
@@ -112,44 +114,40 @@ def evaluate_detectron2(
         results[_experiment_id_] = dict()
 
     # registering datasets
+    logger.info("registering datasets...")
     for _dataset_ in ["train", "valid", "test"]:
-        logger.debug(f"reading {_dataset_} data")
-        register_coco_instances(
-            f"{_experiment_id_}_{_dataset_}",
-            {},
-            os.path.join(_coco_path_, _dataset_, "_annotations.coco.json"),
-            os.path.join(_coco_path_, _dataset_)
-        )
+        if f"{_experiment_id_}_{_dataset_}" not in MetadataCatalog.list():
+            logger.debug(f"reading {_dataset_} data")
+            register_coco_instances(
+                f"{_experiment_id_}_{_dataset_}",
+                {},
+                os.path.join(_coco_path_, _dataset_, "_annotations.coco.json"),
+                os.path.join(_coco_path_, _dataset_)
+            )
 
     # loading model
     logger.info("loading model...")
     cfg = get_cfg()
-    cfg.OUTPUT_DIR = os.path.join(_output_path_, _experiment_id_)
-    cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-    cfg.DATALOADER.NUM_WORKERS = fine_tuning_params["num_workers"]
-    cfg.SOLVER.IMS_PER_BATCH = fine_tuning_params["ims_per_batch"]
-    cfg.SOLVER.BASE_LR = fine_tuning_params["base_lr"]
-    cfg.SOLVER.MAX_ITER = fine_tuning_params["max_iter"]
-    cfg.SOLVER.STEPS = fine_tuning_params["steps"]
-    cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = fine_tuning_params["batch_size_per_image"]
+    cfg.merge_from_file(model_zoo.get_config_file(fine_tuning_params["pretrained_model_config"]))
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = fine_tuning_params["num_classes"]
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = fine_tuning_params["score_thresh_test"]
+    cfg.OUTPUT_DIR = os.path.join(_output_path_, _experiment_id_)
+    cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
 
     predictor = DefaultPredictor(cfg)
 
     for _SET_ in ["train", "valid", "test"]:
         logger.debug(f"evaluating {_SET_} set...")
+        os.makedirs(f"data/08_reporting/{_experiment_id_}/{_SET_}", exist_ok=True)
         # registering datasets
-        cfg.DATASETS.TEST = (f"{_experiment_id_}_{_SET_}",)
         datasets_dicts = load_coco_json(
             os.path.join(_coco_path_, _SET_, "_annotations.coco.json"),
             os.path.join(_coco_path_, _SET_)
         )
         # generating 5 random samples
-        os.makedirs(f"data/08_reporting/{_experiment_id_}/{_SET_}", exist_ok=True)
         sample_counter = 0
         for _img_ in random.sample(datasets_dicts, 5):
-            logger.debug(_img_)
+            # logger.debug(_img_)
             im = cv2.imread(_img_["file_name"])
             outputs = predictor(im)
             logger.debug(outputs)
