@@ -5,6 +5,8 @@ generated using Kedro 0.19.5
 import logging
 import os
 import random
+import re
+import zipfile
 from typing import Union
 
 import cv2
@@ -204,3 +206,103 @@ def evaluate_detectron2(
         plots[_experiment_id_][f"{_SET_}_confusion_matrix.png"] = confusion_matrix.plot()
 
     return results, plots
+
+
+def compress_results(
+        dataprep_params: dict,
+        fine_tuning_params: dict,
+    ) -> None:
+    """
+    `todo` documentation.
+
+    important folders:
+        + dataset metadata i.e. data/05_model_input/gunshots/coco/v1/README.roboflow.txt
+        + tuning metadata i.e. data/06_models/tuned/detectron2_rccn_101_conf2_v1.json
+        + results metadata i.e. data/06_models/output/detectron2_rccn_101_conf2_v1
+        + evaluation metadata i.e. data/06_models/eval/detectron2_rccn_101_conf2_v1.json
+        + evaluation plots i.e. data/08_reporting/detectron2_rccn_101_conf2_v1 AND data/08_reporting/plots/detectron2_rccn_101_conf2_v1
+    """
+    np.random.seed(0)
+    torch.manual_seed(0)
+    random.seed(0)
+    np.set_printoptions(precision=5)
+
+    _experiment_id_ = dataprep_params['experiment_id']
+    _coco_path_ = os.path.join(*dataprep_params['coco_data']['path'])
+    _output_path_ = os.path.join(*fine_tuning_params["path"])
+
+    _metadata_ = {
+        "experiment_id": _experiment_id_,
+        "coco_path": _coco_path_,
+        "output_path": _output_path_,
+        "files" : {
+            "dataset": os.path.join("data/05_model_input/gunshots/coco/v1", "README.roboflow.txt"),
+            "tuning": os.path.join(f"data/06_models/tuned/{_experiment_id_}.json"),
+            "evaluation": os.path.join(f"data/06_models/eval/{_experiment_id_}.json"),
+        },
+        "folders" : {
+            "results": os.path.join("data/06_models/output", _experiment_id_),
+            "evaluation": os.path.join("data/06_models/eval", _experiment_id_),
+            "evaluation_plots": os.path.join("data/08_reporting", _experiment_id_),
+        }
+    }
+
+    # get text from README.roboflow.txt
+    with open(_metadata_["files"]["dataset"]) as f:
+        _dataset_metadata_ = f.read()
+    exclude_section = re.compile(
+        r'Roboflow is an end-to-end computer vision platform that helps you\n'
+        r'\* collaborate with your team on computer vision projects\n'
+        r'\* collect & organize images\n'
+        r'\* understand and search unstructured image data\n'
+        r'\* annotate, and create datasets\n'
+        r'\* export, train, and deploy computer vision models\n'
+        r'\* use active learning to improve your dataset over time\n\n'
+        r'For state of the art Computer Vision training notebooks you can use with this dataset,\n'
+        r'visit https:\/\/github\.com\/roboflow\/notebooks\n\n'
+        r'To find over 100k other datasets and pre-trained models, visit https:\/\/universe\.roboflow\.com\n'
+    )
+    _dataset_metadata_ = exclude_section.sub("", _dataset_metadata_)
+
+    with zipfile.ZipFile(f"{_experiment_id_}.zip", "w") as zipf:
+        # add files, reconstructing subfolders structure, containing _experiment_id_ and excluding *.pth and *tfevents*
+        for folder in [
+            os.path.join("data", "05_model_input"),
+            os.path.join("data", "06_models"),
+            os.path.join("data", "08_reporting"),
+        ]:
+            for root, _, files in os.walk(folder):
+                for file in files:
+                    if np.all([
+                        not file.endswith(".pth"),
+                        "tfevents" not in file,
+                        "last_checkpoint" not in file,
+                    ]):
+                        if _experiment_id_ in root or _experiment_id_ in file:
+                            file_path = os.path.join(root, file)
+                            arcname = os.path.relpath(file_path, os.path.dirname(folder))
+                            zipf.write(file_path, arcname)
+
+        readme_content = f"""Experiment
+= = = = = = = = = =
+{_experiment_id_}
+
+{_dataset_metadata_}
+
+Tuning
+= = = = = = = = = =
++ {str(_metadata_["files"]["tuning"])}, a JSON file containing model details and hyperparameters used in setting up the model
+
+Results
+= = = = = = = = = =
++ {str(_metadata_["folders"]["results"])}, a folder containing the model training output
+
+Evaluation
+= = = = = = = = = =
++ {str(_metadata_["files"]["evaluation"])}, a JSON file containing the evaluation metrics
++ {str(_metadata_["folders"]["evaluation"])}, a folder containing sample predictions in each dataset split
++ {str(_metadata_["folders"]["evaluation_plots"])}, a folder containing plots generated during evaluation
+        """
+
+        zipf.writestr("README.txt", readme_content)
+

@@ -138,6 +138,14 @@ YOLO vs RCNN
 - RCNN is more accurate than YOLO
 - YOLO is better for real-time applications
 
+## Notes on Object Detection Metrics
+
++ IoU, intersection over union, area of overlap divided by area of union
++ AP, average precision: varying different thresholds for the IoU
++ AP50, average precision at 50% IoU
++ AP75, average precision at 75% IoU, it is more strict
++ APs, APm, APl, average precision for small, medium, large objects
+
 # References
 - [https://arxiv.org/abs/1807.05511](https://arxiv.org/abs/1807.05511)
 - [https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298](https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298)
