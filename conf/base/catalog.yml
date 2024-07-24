@@ -75,6 +75,24 @@ detectron2.mask_rccn_50_conf1_v1.evaluation_results:
 detectron2.mask_rccn_50_conf1_v1.evaluation_plots:
     <<: *template_evaluation_matplotlib
 
+# rccn_101_conf1_v2
+detectron2.rccn_101_conf1_v2.fine_tuning_results:
+    <<: *template_fine_tuning_json
+
+detectron2.rccn_101_conf1_v2.evaluation_results:
+    <<: *template_evaluation_json
+
+detectron2.rccn_101_conf1_v2.evaluation_plots:
+    <<: *template_evaluation_matplotlib
+
+
+#
+# YOLO
+#
+yolo.yolov8_conf1_v1.model:
+    type: MemoryDataset
+
+
 # 
 # GENERIC
 # 
