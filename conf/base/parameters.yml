@@ -173,6 +173,6 @@ yolo:
             model_name : yolov8n.pt
             experiment_name: *yolo_experiment_id
             model_config:
-                epochs: 10
-                batch: 8
-                img_size: 1280
+                epochs: 128
+                batch: 16
+                img_size: 512
