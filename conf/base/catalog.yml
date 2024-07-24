@@ -92,6 +92,15 @@ detectron2.rccn_101_conf1_v2.evaluation_plots:
 yolo.yolov8_conf1_v1.model:
     type: MemoryDataset
 
+yolo.yolov8_conf1_v1.fine_tuning_results:
+    <<: *template_fine_tuning_json
+
+yolo.yolov8_conf1_v1.evaluation_results:
+    <<: *template_evaluation_json
+
+yolo.yolov8_conf1_v1.evaluation_plots:
+    <<: *template_evaluation_matplotlib
+
 
 # 
 # GENERIC
