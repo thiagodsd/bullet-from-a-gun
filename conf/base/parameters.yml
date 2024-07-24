@@ -174,5 +174,5 @@ yolo:
             experiment_name: *yolo_experiment_id
             model_config:
                 epochs: 10
-                batch: 5
+                batch: 8
                 img_size: 1280

@@ -88,7 +88,8 @@ def fine_tune_yolo(
         cache = True,
         single_cls = True,
         optimizer="SGD",
-        lr0 = 0.0001
+        lr0 = 0.0001,
+        rect=True
     )
 
     return results
