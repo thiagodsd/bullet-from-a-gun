@@ -24,6 +24,7 @@ from pytorch_lightning.loggers import TensorBoardLogger
 from torch.utils.data import DataLoader
 from transformers import DetrForObjectDetection, DetrImageProcessor
 import supervision as sv
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -353,7 +354,7 @@ def evaluate_detr(
             # ).save(f"data/08_reporting/{_experiment_id_}/{_SET_}/prediction_sample_{sampler_counter}.png")
             with torch.no_grad():
                 _inputs_ = image_processor(images=_im_, return_tensors="pt").to(device)
-                _outputs_ = model(**_inputs_)
+                _outputs_ = model(pixel_values=_inputs_.pixel_values, pixel_mask=None)
                 _target_sizes_ = torch.tensor([_im_.shape[:2]]).to(device)
                 _results_ = image_processor.post_process_object_detection(
                     _outputs_,
@@ -361,19 +362,37 @@ def evaluate_detr(
                     threshold=0.5
                 )[0]
             _detections_ = sv.Detections.from_transformers(_results_).with_nms(threshold=0.5)
-            _labels_ = [
-                f"{_category_ids_[class_id]} {confidence:.2f}"
-                for _, confidence, class_id, _ in zip(
-                    _detections_.xyxy, _detections_.confidence, _detections_.class_id, range(len(_detections_.xyxy))
-                )
-            ]
-            _frame_ = _box_annotator_.annotate(
-                scene=_im_.copy(),
-                detections=_detections_,
+            def save_results(
+                    image,
+                    score,
+                    label,
+                    box
+                ):
+                logger.debug(score)
+                logger.debug(label)
+                logger.debug(box)
+                _, ax = plt.subplots(1, 1, figsize=(10, 10))
+                ax.imshow(image)
+                for score_, label_, (x0, y0, x1, y1) in zip(score.tolist(), label.tolist(), box.tolist()):
+                    ax.add_patch(
+                        plt.Rectangle(
+                            (x0, y0),
+                            x1 - x0,
+                            y1 - y0,
+                            fill = False,
+                            edgecolor='red',
+                            lw=3
+                        )
+                    )
+                    ax.text(x0, y0, f"{_categories_[label_]}: {score_:.2f}", color='red', fontsize=15)
+                plt.axis('off')
+                plt.savefig(f"data/08_reporting/{_experiment_id_}/{_SET_}/prediction_sample_{sampler_counter}.png")
+            save_results(
+                image = _im_,
+                score = _detections_.confidence,
+                label = _detections_.class_id,
+                box = _detections_.xyxy
             )
-            Image.fromarray(
-                cv2.cvtColor(_frame_, cv2.COLOR_BGR2RGB)
-            ).save(f"data/08_reporting/{_experiment_id_}/{_SET_}/prediction_sample_{sampler_counter}.png")
 
 
         # create the evaluator
