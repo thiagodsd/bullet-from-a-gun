@@ -322,3 +322,4 @@ data/01_raw/bullets_train_output_1.txt
 data/01_raw/gunshot_train_output_1.txt
 *.zip
 yolov8n.pt
+lightning_logs/**/*

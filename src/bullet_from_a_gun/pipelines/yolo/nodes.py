@@ -156,6 +156,7 @@ def evaluate_yolo(
 
     return results, plots
 
+
 def compress_results(
         dataprep_params: dict,
         fine_tuning_params: dict,

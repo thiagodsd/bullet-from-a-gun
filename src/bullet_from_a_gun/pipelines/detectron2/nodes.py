@@ -10,18 +10,16 @@ import zipfile
 from typing import Union
 
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import supervision as sv
 import torch
 from detectron2 import model_zoo
 from detectron2.config import get_cfg
-from detectron2.data import DatasetCatalog, MetadataCatalog, build_detection_test_loader
+from detectron2.data import MetadataCatalog, build_detection_test_loader
 from detectron2.data.datasets import load_coco_json, register_coco_instances
 from detectron2.engine import DefaultPredictor, DefaultTrainer
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
-from detectron2.structures import BoxMode
-from detectron2.utils.visualizer import ColorMode, Visualizer
+from detectron2.utils.visualizer import Visualizer
 from PIL import Image
 
 logger = logging.getLogger(__name__)
