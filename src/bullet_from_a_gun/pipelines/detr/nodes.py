@@ -361,7 +361,8 @@ def evaluate_detr(
                     target_sizes = _target_sizes_,
                     threshold=0.5
                 )[0]
-            _detections_ = sv.Detections.from_transformers(_results_).with_nms(threshold=0.5)
+            logger.debug(_results_)
+            # _detections_ = sv.Detections.from_transformers(_results_).with_nms(threshold=0.5)
             def save_results(
                     image,
                     score,
@@ -387,11 +388,17 @@ def evaluate_detr(
                     ax.text(x0, y0, f"{_categories_[label_]}: {score_:.2f}", color='red', fontsize=15)
                 plt.axis('off')
                 plt.savefig(f"data/08_reporting/{_experiment_id_}/{_SET_}/prediction_sample_{sampler_counter}.png")
+            # save_results(
+            #     image = _im_,
+            #     score = _results_.confidence,
+            #     label = _results_.class_id,
+            #     box = _results_.xyxy
+            # )
             save_results(
                 image = _im_,
-                score = _detections_.confidence,
-                label = _detections_.class_id,
-                box = _detections_.xyxy
+                score = _results_['scores'],
+                label = _results_['labels'],
+                box = _results_['boxes']
             )
 
 
