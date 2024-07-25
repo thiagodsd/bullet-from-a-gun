@@ -700,6 +700,21 @@ files = [
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
+name = "coco-eval"
+version = "0.0.4"
+description = "A tiny package containing a COCO evaluator that works in distributed environments."
+optional = false
+python-versions = "*"
+files = [
+    {file = "coco_eval-0.0.4.tar.gz", hash = "sha256:cd7d91fb6aeb3d48984b625962302e3387f1f9c2c73f1aabceb7abaf33e7c80a"},
+]
+
+[package.dependencies]
+numpy = "*"
+pycocotools = "*"
+torch = "*"
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -7602,4 +7617,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "e9df14abe3b76b15a76d20fbc12c824965e70efa8445bbd13ed55f7167c23e8a"
+content-hash = "10c3734ae54e01113328185414839b4d1a6e6942b9091bc436c2f154a8593146"
