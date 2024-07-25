@@ -2,11 +2,13 @@
 This is a boilerplate pipeline 'detr'
 generated using Kedro 0.19.5
 """
+import io
 import logging
 import os
 import random
+import sys
 from typing import Union
-
+import cv2
 import numpy as np
 import torch
 import torchvision
@@ -15,11 +17,13 @@ import tqdm
 from coco_eval import CocoEvaluator
 from PIL import Image
 from pycocotools.coco import COCO
+from pycocotools.cocoeval import COCOeval
 from pytorch_lightning import LightningModule, Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 from torch.utils.data import DataLoader
 from transformers import DetrForObjectDetection, DetrImageProcessor
+import supervision as sv
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -51,7 +55,11 @@ class CustomCocoDetection(torchvision.datasets.CocoDetection):
 class Detr(LightningModule):
     def __init__(self, lr, lr_backbone, weight_decay):
         super().__init__()
-        self.model = DetrForObjectDetection.from_pretrained("facebook/detr-resnet-50")
+        self.model = DetrForObjectDetection.from_pretrained(
+            "facebook/detr-resnet-50",
+            num_labels = 2,
+            ignore_mismatched_sizes=True
+        )
         self.image_processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50")
         self.lr = lr
         self.lr_backbone = lr_backbone
@@ -112,6 +120,8 @@ def fine_tune_detr(  # noqa: PLR0915
 
     results[_experiment_id_] = dataprep_params.copy()
     results[_experiment_id_].update(fine_tuning_params)
+
+    torch.cuda.empty_cache()
 
     image_processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50")
 
@@ -191,7 +201,7 @@ def fine_tune_detr(  # noqa: PLR0915
         gradient_clip_val = 0.1,
         accumulate_grad_batches = 8,
         log_every_n_steps = 5,
-        default_root_dir = os.path.join(_output_path_, _experiment_id_, "logs"),
+        default_root_dir = os.path.join(_output_path_, _experiment_id_),
         callbacks = [checkpoint_callback],
         logger = logger_tensorboard,
     )
@@ -202,8 +212,9 @@ def fine_tune_detr(  # noqa: PLR0915
     os.makedirs(_output_path_, exist_ok=True)
     torch.save(
         model.state_dict(),
-        os.path.join(_output_path_, _experiment_id_, "model_final.pth")
+        os.path.join(_output_path_, _experiment_id_, "state_dict.pth")
     )
+    model.model.save_pretrained(os.path.join(_output_path_, _experiment_id_))
 
     return results
 
@@ -238,12 +249,20 @@ def prepare_for_coco_detection(predictions):
     return coco_results
 
 
-def evaluate_detr(dataprep_params: dict, fine_tuning_params: dict, fine_tuning_results: dict) -> Union[dict, dict]:
-    """Evaluate DETR model."""
+def evaluate_detr(
+        dataprep_params: dict,
+        fine_tuning_params: dict,
+        fine_tuning_results: dict
+    ) -> Union[dict, dict]:
+    """
+    `todo` documentation.
+    """
     np.random.seed(0)
     torch.manual_seed(0)
     random.seed(0)
     np.set_printoptions(precision=5)
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     plots = dict()
     results = dict()
@@ -257,52 +276,145 @@ def evaluate_detr(dataprep_params: dict, fine_tuning_params: dict, fine_tuning_r
     if _experiment_id_ not in plots:
         plots[_experiment_id_] = dict()
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    torch.cuda.empty_cache()
 
+    # loading image processor
     image_processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50")
     transform = T.Compose([
         T.Resize(800),
         T.ToTensor()
     ])
 
-    # Load model
-    model = torch.hub.load('facebookresearch/detr', 'detr_resnet50', pretrained=False, num_classes=fine_tuning_params["num_classes"])
-    model.load_state_dict(torch.load(os.path.join(_output_path_, _experiment_id_, "model_final.pth")))
+    def collate_fn(batch):
+        """
+        `todo` documentation.
+        """
+        pixel_values = [item[0] for item in batch]
+        encoding = image_processor.pad(pixel_values, return_tensors="pt")
+        labels = [item[1] for item in batch]
+        return {
+            'pixel_values': encoding['pixel_values'],
+            'pixel_mask': encoding['pixel_mask'],
+            'labels': labels
+        }
+
+    # loading model
+    model = DetrForObjectDetection.from_pretrained(
+        os.path.join(_output_path_, _experiment_id_),
+    )
     model.to(device)
     model.eval()
 
+    logger.debug(torch.cuda.is_available())
+    logger.debug(torch.cuda.current_device())
+    logger.debug(torch.cuda.get_device_name())
+    logger.debug(torch.cuda.memory_allocated())
+    logger.debug(torch.cuda.memory_reserved())
+    logger.debug(torch.cuda.memory_summary())
+
     for _SET_ in ["train", "valid", "test"]:
-        # Load COCO dataset
-        coco = COCO(os.path.join(_coco_path_, _SET_, "_annotations.coco.json"))
-        image_dir = os.path.join(_coco_path_, _SET_)
+        logger.debug(f"Running evaluation on {_SET_} set")
+        os.makedirs(f"data/08_reporting/{_experiment_id_}/{_SET_}", exist_ok=True)
+        # create the datasets
+        _dataset_ = CustomCocoDetection(
+            os.path.join(_coco_path_, _SET_),
+            image_processor,
+            train=True
+        )
+        # create the data loaders
+        _loader_ = DataLoader(
+            _dataset_,
+            batch_size = fine_tuning_params["batch_size"],
+            shuffle = False,
+            num_workers = fine_tuning_params["num_workers"],
+            collate_fn = collate_fn
+        )
+        # generating 5 random samples
+        _images_ids_ = _dataset_.coco.getImgIds()
+        _categories_ = _dataset_.coco.cats
+        _category_ids_ = {k: v["id"] for k, v in _categories_.items()}
+        _box_annotator_ = sv.BoxAnnotator()
+        for sampler_counter in range(5):
+            _id_ = random.choice(_images_ids_)
+            logger.debug(f"image id: {_id_}")
+            _image_ = _dataset_.coco.loadImgs(_id_)[0]
+            # _image_annotations_ = _dataset_.coco.imgToAnns[_id_]
+            _image_path_ = os.path.join(_dataset_.root, _image_["file_name"])
+            _im_ = cv2.imread(_image_path_)
+            # _detections_ = sv.Detections.from_coco_annotations(_image_annotations_) # bug
+            # _labels_ = [f"{_categories_[class_id]}" for _,_,class_id,_ in _detections_]
+            # _frame_ = _box_annotator_.annotate(
+            #     scene=_im_.copy(),
+            #     detections=_detections_,
+            #     labels=_labels_,
+            # )
+            # Image.fromarray(
+            #     cv2.cvtColor(_frame_, cv2.COLOR_BGR2RGB)
+            # ).save(f"data/08_reporting/{_experiment_id_}/{_SET_}/prediction_sample_{sampler_counter}.png")
+            with torch.no_grad():
+                _inputs_ = image_processor(images=_im_, return_tensors="pt").to(device)
+                _outputs_ = model(**_inputs_)
+                _target_sizes_ = torch.tensor([_im_.shape[:2]]).to(device)
+                _results_ = image_processor.post_process_object_detection(
+                    _outputs_,
+                    target_sizes = _target_sizes_,
+                    threshold=0.5
+                )[0]
+            _detections_ = sv.Detections.from_transformers(_results_).with_nms(threshold=0.5)
+            _labels_ = [
+                f"{_category_ids_[class_id]} {confidence:.2f}"
+                for _, confidence, class_id, _ in zip(
+                    _detections_.xyxy, _detections_.confidence, _detections_.class_id, range(len(_detections_.xyxy))
+                )
+            ]
+            _frame_ = _box_annotator_.annotate(
+                scene=_im_.copy(),
+                detections=_detections_,
+            )
+            Image.fromarray(
+                cv2.cvtColor(_frame_, cv2.COLOR_BGR2RGB)
+            ).save(f"data/08_reporting/{_experiment_id_}/{_SET_}/prediction_sample_{sampler_counter}.png")
 
-        img_ids = coco.getImgIds()
-        dataset_dicts = coco.loadImgs(img_ids)
 
-        evaluator = CocoEvaluator(coco, iou_types=["bbox"])
+        # create the evaluator
+        evaluator = CocoEvaluator(
+            coco_gt=_dataset_.coco,
+            iou_types=["bbox"],
+        )
 
-        for img_dict in tqdm(dataset_dicts):
-            img_path = os.path.join(image_dir, img_dict['file_name'])
-            image = Image.open(img_path).convert("RGB")
-            image_tensor = transform(image).unsqueeze(0).to(device)
+        for _, batch in enumerate(tqdm.tqdm(_loader_)):
+            pixel_values = batch["pixel_values"].to(device)
+            pixel_mask = batch["pixel_mask"].to(device)
+            labels = [{k: v.to(device) for k, v in t.items()} for t in batch["labels"]]
 
             with torch.no_grad():
-                outputs = model(image_tensor)
+                outputs = model(
+                    pixel_values=pixel_values,
+                    pixel_mask=pixel_mask,
+                )
+            original_target_sizes = torch.stack([target["orig_size"] for target in labels], dim=0)
+            _results_ = image_processor.post_process_object_detection(
+                outputs,
+                target_sizes = original_target_sizes,
+                threshold=0
+            )
 
-            outputs = [{k: v.cpu() for k, v in t.items()} for t in outputs]
-
-            orig_target_sizes = torch.tensor([img_dict['height'], img_dict['width']]).unsqueeze(0)
-            results = image_processor.post_process_object_detection(outputs, target_sizes=orig_target_sizes)
-
-            predictions = {img_dict['id']: output for output in results}
+            predictions = {
+                target["image_id"].item(): output for target, output in zip(labels, _results_)
+            }
             predictions = prepare_for_coco_detection(predictions)
             evaluator.update(predictions)
 
         evaluator.synchronize_between_processes()
         evaluator.accumulate()
-        evaluator.summarize()
+        # evaluator.summarize()
 
-        eval_results = evaluator.coco_eval['bbox'].stats.tolist()
-        results[_experiment_id_][_SET_] = eval_results
+        # handling summary output
+        _output_ = io.StringIO()
+        sys.stdout = _output_
+        for _, _eval_ in evaluator.coco_eval.items():
+            _eval_.summarize()
+        sys.stdout = sys.__stdout__
+        results[_experiment_id_][_SET_] = f"""{_output_.getvalue()}"""
 
     return results, plots

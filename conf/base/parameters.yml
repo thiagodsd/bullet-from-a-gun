@@ -206,4 +206,5 @@ detr:
             lr: 0.0001
             lr_backbone: 0.0001
             weight_decay: 0.0001
-            epochs: 5
+            epochs: 3
+            num_classes: 2
