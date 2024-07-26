@@ -50,11 +50,8 @@ Here, data from Roboflow is used as input to fine-tune the model. This node enca
 #### `Evaluate` node
 In this node, the model is evaluated using train, validation, and test datasets. Once the evaluation is done, some random predictions are made and saved as image files. Lastly, a confusion matrix is generated and saved as both a JSON file and an image file. The results are saved in the `Evaluation Results` and `Evaluation Plots` objects.
 
-
 #### `Compress Results` node
 This node is responsible for compressing the results of the evaluation, excluding the model weights, and saving them in a zip file.
-
-<br/><br/><br/>
 
 
 ## Usage
