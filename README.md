@@ -18,6 +18,9 @@ This repository is dedicated to the comparison and benchmarking of state-of-the-
 ## Objective
 Our primary goal is to systematically evaluate and identify the most effective CNN models for gunshot hole detection, considering aspects such as accuracy, speed, and computational efficiency. Through rigorous testing across different datasets, including varying target materials, bullet calibers, and shooting distances, we aim to provide comprehensive insights that can guide researchers, hobbyists, and professionals in selecting or developing optimized models for similar applications.
 
+# Software and Hardware
+This project was developed on a 64-bit *Ubuntu Linux 22.04* operating system, equipped with 16 GB of RAM and an 8-core *AMD Ryzen 7 3700X* processor. The graphics processing unit used was a *NVIDIA GeForce GTX 1660 Ti*. All codes were implemented and executed using the *Python* programming language, version 3.10.12. Most of the Deep Learning models were developed using the *PyTorch* library version 2.0.0+cu117.
+
 ## Methodology
 `todo`
 
@@ -154,6 +157,9 @@ Citing/reference: `arXiv:1905.05055v3 [cs.CV] 18 Jan 2023`
 - [https://arxiv.org/abs/1807.05511](https://arxiv.org/abs/1807.05511)
 - [https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298](https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298)
 - [Object Detection in 20 Years: A Survey](https://arxiv.org/abs/1905.05055)
+-  https://github.com/NielsRogge/Transformers-Tutorials/blob/master/DETR/Fine_tuning_DetrForObjectDetection_on_custom_dataset_(balloon).ipynb
+-  https://github.com/NielsRogge/Transformers-Tutorials/blob/master/DETA/Fine_tuning_DETA_on_a_custom_dataset_(balloon).ipynb
+-  https://colab.research.google.com/github/roboflow-ai/notebooks/blob/main/notebooks/train-huggingface-detr-on-custom-dataset.ipynb?ref=blog.roboflow.com#scrollTo=jbzTzHJW22up
 
 # License
 This project is licensed under the MIT License - see the LICENSE file for details.

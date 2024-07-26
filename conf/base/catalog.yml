@@ -102,6 +102,22 @@ yolo.yolov8_conf1_v1.evaluation_plots:
     <<: *template_evaluation_matplotlib
 
 
+#
+# DETR
+#
+detr.detr_resnet_50_conf1_v1.model:
+    type: MemoryDataset
+
+detr.detr_resnet_50_conf1_v1.fine_tuning_results:
+    <<: *template_fine_tuning_json
+
+detr.detr_resnet_50_conf1_v1.evaluation_results:
+    <<: *template_evaluation_json
+
+detr.detr_resnet_50_conf1_v1.evaluation_plots:
+    <<: *template_evaluation_matplotlib
+
+
 # 
 # GENERIC
 # 
