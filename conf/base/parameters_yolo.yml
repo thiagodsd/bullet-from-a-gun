@@ -1,5 +1,92 @@
-# This is a boilerplate parameters config generated for pipeline 'yolo'
-# using Kedro 0.19.5.
-#
-# Documentation for this file format can be found in "Parameters"
-# Link: https://docs.kedro.org/en/0.19.5/configuration/parameters.html
+yolo:
+    #
+    yolov8_conf1_v1:
+        dataprep_params:
+            experiment_id: "yolov8_conf1_v1" 
+            yolo_data:
+                path:
+                    - data
+                    - 05_model_input
+                    - gunshots
+                    - yolo
+                    - v1
+                datasets:
+                    - train
+                    - valid
+                    - test
+        fine_tuning_params:
+            path:
+                - data
+                - 06_models
+                - output
+            model_name : yolov8n.pt
+            experiment_name: "yolov8_conf1_v1" 
+            model_config:
+                epochs: 128
+                batch: 16
+                img_size: 512
+                optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.
+                lr: 0.0001
+                workers: 8
+                rect: True
+                iou: 0.5
+    yolov8_conf2_v1:
+        dataprep_params:
+            experiment_id: "yolov8_conf2_v1"
+            yolo_data:
+                path:
+                    - data
+                    - 05_model_input
+                    - gunshots
+                    - yolo
+                    - v1
+                datasets:
+                    - train
+                    - valid
+                    - test
+        fine_tuning_params:
+            path:
+                - data
+                - 06_models
+                - output
+            model_name : yolov8s.pt
+            experiment_name: "yolov8_conf2_v1"
+            model_config:
+                epochs: 128
+                batch: 16
+                img_size: 512
+                optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.
+                lr: 0.0001
+                workers: 8
+                rect: True
+                iou: 0.5
+    yolov8_conf3_v1:
+        dataprep_params:
+            experiment_id: "yolov8_conf3_v1"
+            yolo_data:
+                path:
+                    - data
+                    - 05_model_input
+                    - gunshots
+                    - yolo
+                    - v1
+                datasets:
+                    - train
+                    - valid
+                    - test
+        fine_tuning_params:
+            path:
+                - data
+                - 06_models
+                - output
+            model_name : yolov8s.pt
+            experiment_name: "yolov8_conf3_v1"
+            model_config:
+                epochs: 1024
+                batch: 16
+                img_size: 512
+                optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.
+                lr: 0.0001
+                workers: 8
+                rect: True
+                iou: 0.5

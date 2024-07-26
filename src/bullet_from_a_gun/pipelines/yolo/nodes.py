@@ -63,14 +63,17 @@ def fine_tune_yolo(
         imgsz = fine_tuning_params["model_config"]["img_size"],
         project = _output_path_,
         name = _experiment_id_,
+        optimizer = fine_tuning_params["model_config"]["optimizer"],
+        lr0 = fine_tuning_params["model_config"]["lr"],
+        # rect = fine_tuning_params["model_config"]["rect"],
+        # iou = fine_tuning_params["model_config"]["iou"],
         device = 0,
         exist_ok = True,
         save = True,
         val = True,
         cache = True,
         single_cls = True,
-        optimizer = fine_tuning_params["model_config"]["optimizer"],
-        lr0 = fine_tuning_params["model_config"]["lr"],
+        amp = False
     )
 
     return results
