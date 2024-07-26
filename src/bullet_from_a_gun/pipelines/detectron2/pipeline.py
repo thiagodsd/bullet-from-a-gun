@@ -42,6 +42,8 @@ def create_pipeline(**kwargs) -> Pipeline:
             inputs=[
                 "params:dataprep_params",
                 "params:fine_tuning_params",
+                "evaluation_results",
+                "evaluation_plots",
             ],
             outputs=None,
             name="compress_results_detectron2",

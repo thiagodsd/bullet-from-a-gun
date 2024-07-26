@@ -209,6 +209,8 @@ def evaluate_detectron2(
 def compress_results(
         dataprep_params: dict,
         fine_tuning_params: dict,
+        evaluation_results: dict,
+        evaluation_plots: dict,
     ) -> None:
     """
     `todo` documentation.
@@ -220,6 +222,8 @@ def compress_results(
         + evaluation metadata i.e. data/06_models/eval/detectron2_rccn_101_conf2_v1.json
         + evaluation plots i.e. data/08_reporting/detectron2_rccn_101_conf2_v1 AND data/08_reporting/plots/detectron2_rccn_101_conf2_v1
     """
+    _ = evaluation_results
+    _ = evaluation_plots
     np.random.seed(0)
     torch.manual_seed(0)
     random.seed(0)

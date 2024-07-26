@@ -6,7 +6,7 @@ generated using Kedro 0.19.5
 from kedro.pipeline import Pipeline, node
 from kedro.pipeline.modular_pipeline import pipeline
 
-from .nodes import evaluate_detr, fine_tune_detr
+from .nodes import compress_results, evaluate_detr, fine_tune_detr
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -36,6 +36,17 @@ def create_pipeline(**kwargs) -> Pipeline:
                 "evaluation_plots",
             ],
             name="evaluate_detr",
+        ),
+        node(
+            func=compress_results,
+            inputs=[
+                "params:dataprep_params",
+                "params:fine_tuning_params",
+                "evaluation_results",
+                "evaluation_plots",
+            ],
+            outputs=None,
+            name="compress_results_detr",
         ),
     ])
 

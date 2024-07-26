@@ -442,3 +442,18 @@ def evaluate_detr(  # noqa: PLR0915
         # TODO
 
     return results, plots
+
+
+def compress_results(
+        dataprep_params: dict,
+        fine_tuning_params: dict,
+        evaluation_results: dict,
+        evaluation_plots: dict,
+    ) -> None:
+    """
+    `todo` documentation.
+    """
+    _ = evaluation_results
+    _ = evaluation_plots
+    _ = dataprep_params
+    _ = fine_tuning_params
