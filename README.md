@@ -1,35 +1,39 @@
+# Gunshot Detection in Targets: An Object Detection Benchmark
+
+This repository is dedicated to comparing and benchmarking state-of-the-art Convolutional Neural Networks (CNNs) for detecting gunshot holes in various surfaces and materials. Although many algorithms were implemented, for the purposes of this paper, only YOLOv8 was selected for further experiments.
+
 <div align="center">
 
-![repository cover](./docs/repository-cover.jpg)
+![repository cover](./docs/repository-cover-2.png)
 
-<a href="https://universe.roboflow.com/bulletfromagun/bullets-holes-and-other-things">
+<a href="https://app.roboflow.com/bulletfromagun/bullet-holes-other-things/overview">
     <img src="https://app.roboflow.com/images/download-dataset-badge.svg"></img>
 </a>
 
 </div>
 
-<br/>
-
-# Gunshot Detection in Targets: A Object Detection Benchmark
-
-This repository is dedicated to the comparison and benchmarking of state-of-the-art Convolutional Neural Networks (CNNs) for the purpose of detecting gunshot holes in targets. As an emerging area of interest within the fields of computer vision and object detection, the accurate identification of gunshot impacts on various targets presents unique challenges and applications, ranging from sports shooting analysis to law enforcement training enhancements.
-
 
 ## Objective
-Our primary goal is to systematically evaluate and identify the most effective CNN models for gunshot hole detection, considering aspects such as accuracy, speed, and computational efficiency. Through rigorous testing across different datasets, including varying target materials, bullet calibers, and shooting distances, we aim to provide comprehensive insights that can guide researchers, hobbyists, and professionals in selecting or developing optimized models for similar applications.
+Our primary goal is to systematically evaluate and identify the most effective CNN models for gunshot hole detection, considering aspects such as accuracy, speed, and computational efficiency. Through rigorous testing across different datasets, including various target materials, bullet calibers, and shooting distances, we aim to provide comprehensive insights that can guide researchers, hobbyists, and professionals in selecting or developing optimized models for similar applications.
 
 # Software and Hardware
-This project was developed on a 64-bit *Ubuntu Linux 22.04* operating system, equipped with 16 GB of RAM and an 8-core *AMD Ryzen 7 3700X* processor. The graphics processing unit used was a *NVIDIA GeForce GTX 1660 Ti*. All codes were implemented and executed using the *Python* programming language, version 3.10.12. Most of the Deep Learning models were developed using the *PyTorch* library version 2.0.0+cu117.
+This project was developed on a 64-bit *Ubuntu Linux 22.04* operating system, equipped with 16 GB of RAM and an 8-core *AMD Ryzen 7 3700X* processor. The graphics processing unit used was a *NVIDIA GeForce GTX 1660 Ti*. All code was implemented and executed using the *Python* programming language, version 3.10.12. Most of the deep learning models were developed using the *PyTorch* library, version 2.0.0+cu117.
 
 ## Methodology
-`todo`
+In this section the steps taken to prepare data, train models, and evaluate the results are described.
 
 ### Data Preparation
-The dataset used in this project consists of images of targets with gunshot holes, captured under mainly two different conditions: in with the target is composed by concentric circles (reffered as "circle" in the current work) and the other with the target is composed by concentric rounded-corner like squares (reffered as "vertical" in the current work).
+The dataset used in this project consists of images with the presence or absence of gunshot holes, mostly sourced from YouTube videos.
 
-The first step in the data preparation process was to annotate the gunshot holes in the images. This was done using the [Supervisely](https://supervise.ly/) platform, which allows for the creation of custom object detection datasets. The annotated dataset was then exported in both formats, YOLOv5 and COCO, to facilitate the training of different CNN models.
+The first step in the data preparation process was to annotate the gunshot holes in the images. This was done using the [Roboflow](https://roboflow.com/) platform, which allows for the creation of custom object detection datasets. During this process, it was necessary to remove some images due to the following reasons:
 
-Images were cropped in bulks of 50 images using the web tool [Bulk Image Crop](https://bulkimagecrop.com/), by uploading them in the tool and setting the target aspect ratio to 1:1. Then all images were previewed and the ones that were not cropped correctly were manually cropped using the same tool.
+* Bullet holes were not visible because the destruction from gunshots was too severe.
+* Removing brand names, logos, or human faces caused the image to lose visible bullet holes.
+* Presence of grass, as many images were taken from a video of a shooting club, and the grass would introduce bias in the model.
+
+Additionally, it was necessary to standardize images to generalize the dataset for a broader range of algorithms and architecture possibilities. Therefore, images were cropped in batches of 50 using the web tool [Bulk Image Crop](https://bulkimagecrop.com/), by uploading them to the tool and setting the target aspect ratio to 1:1. Then, all images were previewed, and those not cropped correctly were manually cropped using the same tool.
+
+After this, the images were grouped into a project at Roboflow, which in this case is published as [Bullet Holes & Other Things Project](https://app.roboflow.com/bulletfromagun/bullet-holes-other-things/overview). The annotated dataset was then exported in both YOLOv8 and COCO formats to facilitate the training of different algorithms.
 
 # Development Notes
 
