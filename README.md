@@ -1,6 +1,6 @@
 # Gunshot Detection in Targets: An Object Detection Benchmark
 
-This repository is dedicated to comparing and benchmarking state-of-the-art Convolutional Neural Networks (CNNs) for detecting gunshot holes in various surfaces and materials. Although many algorithms were implemented, for the purposes of this paper, only YOLOv8 was selected for further experiments.
+This repository is dedicated to comparing and benchmarking state-of-the-art Convolutional Neural Networks (CNNs) for detecting gunshot holes in various surfaces and materials. Although many algorithms were implemented, only YOLOv8 was selected for further experiments.
 
 <div align="center">
 
@@ -16,7 +16,7 @@ This repository is dedicated to comparing and benchmarking state-of-the-art Conv
 ## Objective
 Our primary goal is to systematically evaluate and identify the most effective CNN models for gunshot hole detection, considering aspects such as accuracy, speed, and computational efficiency. Through rigorous testing across different datasets, including various target materials, bullet calibers, and shooting distances, we aim to provide comprehensive insights that can guide researchers, hobbyists, and professionals in selecting or developing optimized models for similar applications.
 
-# Software and Hardware
+## Software and Hardware
 This project was developed on a 64-bit *Ubuntu Linux 22.04* operating system, equipped with 16 GB of RAM and an 8-core *AMD Ryzen 7 3700X* processor. The graphics processing unit used was a *NVIDIA GeForce GTX 1660 Ti*. All code was implemented and executed using the *Python* programming language, version 3.10.12. Most of the deep learning models were developed using the *PyTorch* library, version 2.0.0+cu117.
 
 ## Methodology
@@ -34,6 +34,28 @@ The first step in the data preparation process was to annotate the gunshot holes
 Additionally, it was necessary to standardize images to generalize the dataset for a broader range of algorithms and architecture possibilities. Therefore, images were cropped in batches of 50 using the web tool [Bulk Image Crop](https://bulkimagecrop.com/), by uploading them to the tool and setting the target aspect ratio to 1:1. Then, all images were previewed, and those not cropped correctly were manually cropped using the same tool.
 
 After this, the images were grouped into a project at Roboflow, which in this case is published as [Bullet Holes & Other Things Project](https://app.roboflow.com/bulletfromagun/bullet-holes-other-things/overview). The annotated dataset was then exported in both YOLOv8 and COCO formats to facilitate the training of different algorithms.
+
+### Modeling
+Although the focus is on YOLOv8, all implemented algorithms share the following structure:
+
+<div align="center">
+
+![modeling pipeline](./docs/kedro-pipeline-2.png)
+
+</div>
+
+#### `Fine Tune` node
+Here, data from Roboflow is used as input to fine-tune the model. This node encapsulates all data adjustments needed to train the model. Both the model state and the parameters and hyperparameters used in fine-tuning are saved at the end of this node's execution in the `Fine Tuning Results` object.
+
+#### `Evaluate` node
+In this node, the model is evaluated using train, validation, and test datasets. Once the evaluation is done, some random predictions are made and saved as image files. Lastly, a confusion matrix is generated and saved as both a JSON file and an image file. The results are saved in the `Evaluation Results` and `Evaluation Plots` objects.
+
+
+#### `Compress Results` node
+This node is responsible for compressing the results of the evaluation, excluding the model weights, and saving them in a zip file.
+
+<br/><br/><br/>
+
 
 # Development Notes
 
@@ -122,7 +144,7 @@ The evaluation results will be saved at the `data/06_models/output/experiment_id
     - Region Proposal Networks (RPN)
     - Superpixels
 
----
+<br/>
 
 - Dataset Preparation
 - Neural Network Architecture Selection
@@ -139,6 +161,8 @@ The evaluation results will be saved at the `data/06_models/output/experiment_id
 - Inference
 - Evaluation
 - Results
+
+<br/>
 
 YOLO vs RCNN
 - YOLO is faster than RCNN
@@ -157,13 +181,10 @@ In recent years, the most frequently used evaluation for detection is "Average P
 
 Citing/reference: `arXiv:1905.05055v3 [cs.CV] 18 Jan 2023`
 
-# References
+## Development References
 - [https://arxiv.org/abs/1807.05511](https://arxiv.org/abs/1807.05511)
 - [https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298](https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298)
 - [Object Detection in 20 Years: A Survey](https://arxiv.org/abs/1905.05055)
 -  https://github.com/NielsRogge/Transformers-Tutorials/blob/master/DETR/Fine_tuning_DetrForObjectDetection_on_custom_dataset_(balloon).ipynb
 -  https://github.com/NielsRogge/Transformers-Tutorials/blob/master/DETA/Fine_tuning_DETA_on_a_custom_dataset_(balloon).ipynb
 -  https://colab.research.google.com/github/roboflow-ai/notebooks/blob/main/notebooks/train-huggingface-detr-on-custom-dataset.ipynb?ref=blog.roboflow.com#scrollTo=jbzTzHJW22up
-
-# License
-This project is licensed under the MIT License - see the LICENSE file for details.
