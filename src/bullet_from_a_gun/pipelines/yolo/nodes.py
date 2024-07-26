@@ -2,41 +2,15 @@
 This is a boilerplate pipeline 'yolo'
 generated using Kedro 0.19.5
 """
-import copy
-import io
 import logging
 import os
 import random
 import re
-import sys
 import zipfile
-from contextlib import redirect_stdout
-from pathlib import Path
 from typing import Union
 
 import numpy as np
 import torch
-
-# from coco_eval import CocoEvaluator
-# from coco_utils import get_coco_api_from_dataset
-# from engine import evaluate
-from PIL import Image
-from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
-from sklearn.metrics import (  # noqa: F401
-    average_precision_score,
-    precision_score,
-    recall_score,
-)
-from torch.utils.data import DataLoader, Subset
-from torchvision import transforms
-from torchvision.models.detection import (
-    FasterRCNN_ResNet50_FPN_V2_Weights,
-    SSD300_VGG16_Weights,  # noqa: F401
-    fasterrcnn_resnet50_fpn_v2,
-    ssd300_vgg16,  # noqa: F401
-)
-from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from ultralytics import YOLO
 
 logger = logging.getLogger(__name__)

@@ -157,6 +157,9 @@ Citing/reference: `arXiv:1905.05055v3 [cs.CV] 18 Jan 2023`
 - [https://arxiv.org/abs/1807.05511](https://arxiv.org/abs/1807.05511)
 - [https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298](https://www.sciencedirect.com/science/article/abs/pii/S1051200422004298)
 - [Object Detection in 20 Years: A Survey](https://arxiv.org/abs/1905.05055)
+-  https://github.com/NielsRogge/Transformers-Tutorials/blob/master/DETR/Fine_tuning_DetrForObjectDetection_on_custom_dataset_(balloon).ipynb
+-  https://github.com/NielsRogge/Transformers-Tutorials/blob/master/DETA/Fine_tuning_DETA_on_a_custom_dataset_(balloon).ipynb
+-  https://colab.research.google.com/github/roboflow-ai/notebooks/blob/main/notebooks/train-huggingface-detr-on-custom-dataset.ipynb?ref=blog.roboflow.com#scrollTo=jbzTzHJW22up
 
 # License
 This project is licensed under the MIT License - see the LICENSE file for details.

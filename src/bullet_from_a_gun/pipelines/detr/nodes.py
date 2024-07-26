@@ -8,23 +8,20 @@ import os
 import random
 import sys
 from typing import Union
+
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
+import supervision as sv  # noqa: F401
 import torch
 import torchvision
-import torchvision.transforms as T
 import tqdm
 from coco_eval import CocoEvaluator
-from PIL import Image
-from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
 from pytorch_lightning import LightningModule, Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 from torch.utils.data import DataLoader
 from transformers import DetrForObjectDetection, DetrImageProcessor
-import supervision as sv
-import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -250,7 +247,7 @@ def prepare_for_coco_detection(predictions):
     return coco_results
 
 
-def evaluate_detr(
+def evaluate_detr(  # noqa: PLR0915
         dataprep_params: dict,
         fine_tuning_params: dict,
         fine_tuning_results: dict
@@ -281,10 +278,6 @@ def evaluate_detr(
 
     # loading image processor
     image_processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50")
-    transform = T.Compose([
-        T.Resize(800),
-        T.ToTensor()
-    ])
 
     def collate_fn(batch):
         """
@@ -332,9 +325,9 @@ def evaluate_detr(
         )
         # generating 5 random samples
         _images_ids_ = _dataset_.coco.getImgIds()
-        _categories_ = _dataset_.coco.cats
-        _category_ids_ = {k: v["id"] for k, v in _categories_.items()}
-        _box_annotator_ = sv.BoxAnnotator()
+        # _categories_ = _dataset_.coco.cats
+        # _category_ids_ = {k: v["id"] for k, v in _categories_.items()}
+        # _box_annotator_ = sv.BoxAnnotator()
         for sampler_counter in range(5):
             _id_ = random.choice(_images_ids_)
             logger.debug(f"image id: {_id_}")
@@ -359,9 +352,9 @@ def evaluate_detr(
                 _results_ = image_processor.post_process_object_detection(
                     _outputs_,
                     target_sizes = _target_sizes_,
-                    threshold=0.5
+                    threshold=0.33
                 )[0]
-            logger.debug(_results_)
+            # logger.debug(_results_)
             # _detections_ = sv.Detections.from_transformers(_results_).with_nms(threshold=0.5)
             def save_results(
                     image,
@@ -369,9 +362,9 @@ def evaluate_detr(
                     label,
                     box
                 ):
-                logger.debug(score)
-                logger.debug(label)
-                logger.debug(box)
+                # logger.debug(score)
+                # logger.debug(label)
+                # logger.debug(box)
                 _, ax = plt.subplots(1, 1, figsize=(10, 10))
                 ax.imshow(image)
                 for score_, label_, (x0, y0, x1, y1) in zip(score.tolist(), label.tolist(), box.tolist()):
@@ -385,7 +378,8 @@ def evaluate_detr(
                             lw=3
                         )
                     )
-                    ax.text(x0, y0, f"{_categories_[label_]}: {score_:.2f}", color='red', fontsize=15)
+                    # ax.text(x0, y0, f"{_categories_[label_]}: {score_:.2f}", color='red', fontsize=15)
+                    ax.text(x0, y0, f"{label_}: {score_:.2f}", color='red', fontsize=15)
                 plt.axis('off')
                 plt.savefig(f"data/08_reporting/{_experiment_id_}/{_SET_}/prediction_sample_{sampler_counter}.png")
             # save_results(
@@ -442,5 +436,9 @@ def evaluate_detr(
             _eval_.summarize()
         sys.stdout = sys.__stdout__
         results[_experiment_id_][_SET_] = f"""{_output_.getvalue()}"""
+        logger.debug(f"""{_output_.getvalue()}""")
+
+        # # confusion matrix
+        # TODO
 
     return results, plots
