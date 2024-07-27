@@ -16,9 +16,65 @@ from ultralytics import YOLO
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+def hyperparameter_tuning_yolo(
+    dataprep_params: dict,
+    fine_tuning_params: dict,
+) -> dict:
+    """
+    `todo` documentation.
+    """
+    np.random.seed(0)
+    torch.manual_seed(0)
+    random.seed(0)
+    np.set_printoptions(precision=5)
+
+    torch.cuda.set_device(0)
+    torch.cuda.empty_cache()
+
+    results = dict()
+
+    model = YOLO(
+        fine_tuning_params["model_name"].replace(".pt", ".yaml")
+    ).load(
+        fine_tuning_params["model_name"]
+    )
+
+    model.to("cuda")
+    logger.debug(torch.cuda.is_available())
+    logger.debug(torch.cuda.current_device())
+    logger.debug(torch.cuda.get_device_name())
+    logger.debug(torch.cuda.memory_allocated())
+    logger.debug(torch.cuda.memory_reserved())
+    logger.debug(torch.cuda.memory_summary())
+
+    _experiment_id_ = dataprep_params['experiment_id']
+    _output_path_ = os.path.join(*fine_tuning_params["path"])
+    _yolo_data_ = os.path.join(*dataprep_params['yolo_data']['path'])
+    _yolo_conf_data_ = os.path.join(_yolo_data_, 'data.yaml')
+
+    logger.debug(_experiment_id_)
+    logger.debug(_yolo_data_)
+    logger.debug(_output_path_)
+
+    model.tune(
+        data = _yolo_conf_data_,
+        project = os.path.join(_output_path_, _experiment_id_),
+        epochs = 15,
+        iterations = 15,
+        optimizer='AdamW',
+        device = 0,
+        exist_ok = True,
+        single_cls = True,
+        amp = False
+    )
+
+    return results
+
+
 def fine_tune_yolo(
     dataprep_params: dict,
     fine_tuning_params: dict,
+    hyperparameter_tuning_results: dict
 ) -> dict:
     """
     `todo` documentation.

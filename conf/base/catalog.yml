@@ -1,3 +1,15 @@
+_template_hyperparameter_tuning_json: &template_hyperparameter_tuning_json
+    type: partitions.IncrementalDataset
+    path: data/06_models/tuning/
+    dataset:
+        type: json.JSONDataset
+        save_args:
+            indent: 4
+    filename_suffix: '.json'
+    metadata:
+        kedro-viz:
+            layer: models
+
 _template_fine_tuning_json: &template_fine_tuning_json
     type: partitions.IncrementalDataset
     path: data/06_models/tuned/
@@ -89,6 +101,10 @@ detectron2.rccn_101_conf1_v2.evaluation_plots:
 #
 # YOLO
 #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+yolo.yolov8_conf1_v1.hyperparameter_tuning_results:
+    <<: *template_hyperparameter_tuning_json
+
 yolo.yolov8_conf1_v1.model:
     type: MemoryDataset
 
@@ -101,6 +117,9 @@ yolo.yolov8_conf1_v1.evaluation_results:
 yolo.yolov8_conf1_v1.evaluation_plots:
     <<: *template_evaluation_matplotlib
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+yolo.yolov8_conf2_v1.hyperparameter_tuning_results:
+    <<: *template_hyperparameter_tuning_json
 
 yolo.yolov8_conf2_v1.model:
     type: MemoryDataset
@@ -114,6 +133,9 @@ yolo.yolov8_conf2_v1.evaluation_results:
 yolo.yolov8_conf2_v1.evaluation_plots:
     <<: *template_evaluation_matplotlib
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+yolo.yolov8_conf3_v1.hyperparameter_tuning_results:
+    <<: *template_hyperparameter_tuning_json
 
 yolo.yolov8_conf3_v1.model:
     type: MemoryDataset
@@ -127,6 +149,37 @@ yolo.yolov8_conf3_v1.evaluation_results:
 yolo.yolov8_conf3_v1.evaluation_plots:
     <<: *template_evaluation_matplotlib
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+yolo.yolov8_conf4_v1.hyperparameter_tuning_results:
+    <<: *template_hyperparameter_tuning_json
+
+yolo.yolov8_conf4_v1.model:
+    type: MemoryDataset
+
+yolo.yolov8_conf4_v1.fine_tuning_results:
+    <<: *template_fine_tuning_json
+
+yolo.yolov8_conf4_v1.evaluation_results:
+    <<: *template_evaluation_json
+
+yolo.yolov8_conf4_v1.evaluation_plots:
+    <<: *template_evaluation_matplotlib
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+yolo.yolov8_conf5_v1.hyperparameter_tuning_results:
+    <<: *template_hyperparameter_tuning_json
+
+yolo.yolov8_conf5_v1.model:
+    type: MemoryDataset
+
+yolo.yolov8_conf5_v1.fine_tuning_results:
+    <<: *template_fine_tuning_json
+
+yolo.yolov8_conf5_v1.evaluation_results:
+    <<: *template_evaluation_json
+
+yolo.yolov8_conf5_v1.evaluation_plots:
+    <<: *template_evaluation_matplotlib
 
 
 #
