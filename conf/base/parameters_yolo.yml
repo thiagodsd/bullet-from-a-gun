@@ -229,7 +229,7 @@ yolo:
                 - data
                 - 06_models
                 - output
-            model_name : yolov8n.pt
+            model_name : yolov8s.pt
             experiment_name: "yolov8_conf8_v1"
             model_config:
                 epochs: 256
