@@ -6572,6 +6572,17 @@ files = [
 ]
 
 [[package]]
+name = "toposort"
+version = "1.10"
+description = "Implements a topological sort algorithm."
+optional = false
+python-versions = "*"
+files = [
+    {file = "toposort-1.10-py3-none-any.whl", hash = "sha256:cbdbc0d0bee4d2695ab2ceec97fe0679e9c10eab4b2a87a9372b929e70563a87"},
+    {file = "toposort-1.10.tar.gz", hash = "sha256:bfbb479c53d0a696ea7402601f4e693c97b0367837c8898bc6471adfca37a6bd"},
+]
+
+[[package]]
 name = "torch"
 version = "2.4.0"
 description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
@@ -7560,4 +7571,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "10c3734ae54e01113328185414839b4d1a6e6942b9091bc436c2f154a8593146"
+content-hash = "5591a970d7bc7b91009a060667b6c9b48f2597b668e459cd52eed203fb05dc47"
