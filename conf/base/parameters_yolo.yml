@@ -83,7 +83,7 @@ yolo:
             experiment_name: "yolov8_conf3_v1"
             model_config:
                 epochs: 256
-                batch: 32
+                batch: 16
                 img_size: 640
                 optimizer: "auto"
                 lr0: 0.001
