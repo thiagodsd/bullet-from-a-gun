@@ -9,10 +9,21 @@ conf/local/**
 conf/**/*credentials*
 
 # ignore everything in the following folders
-data/**
+data/01_raw/**
+data/02_intermediate/**
+data/03_primary/
+data/04_features/
+data/05_model_input/
+data/06_models/
+data/07_model_output/
+data/08_reporting/
+
+!data/05_model_input/gunshots/
+
+
 
 # except their sub-folders
-!data/**/
+# !data/**/
 
 # also keep all .gitkeep files
 !.gitkeep
