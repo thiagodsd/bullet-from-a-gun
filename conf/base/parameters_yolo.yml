@@ -22,7 +22,7 @@ yolo:
             model_name : yolov8n.pt
             experiment_name: "yolov8_conf1_v1" 
             model_config:
-                epochs: 500
+                epochs: 32
                 batch: 16
                 img_size: 512
                 optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.

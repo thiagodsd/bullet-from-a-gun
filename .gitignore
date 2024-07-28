@@ -15,13 +15,8 @@ data/03_primary/
 data/04_features/
 data/05_model_input/bullets
 data/05_model_input/aquarium
-data/06_models/
-data/07_model_output/
-data/08_reporting/
 
 # !data/05_model_input/gunshots/
-
-
 
 # except their sub-folders
 # !data/**/
@@ -333,6 +328,6 @@ data/01_raw/aquarium_train_output_1.txt
 data/01_raw/bullets_train_output_1.txt
 data/01_raw/gunshot_train_output_1.txt
 *.zip
-yolov8n.pt
 lightning_logs/**/*
-yolov8s.pt
+
+*.pt
