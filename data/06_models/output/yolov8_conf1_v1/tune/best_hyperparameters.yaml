@@ -1,0 +1,30 @@
+# 15/15 iterations complete ✅ (952.51s)
+# Results saved to data/06_models/output/yolov8_conf1_v1/tune
+# Best fitness=0.03132 observed at iteration 18
+# Best fitness metrics are {'metrics/precision(B)': 0.26361, 'metrics/recall(B)': 0.0884, 'metrics/mAP50(B)': 0.05965, 'metrics/mAP50-95(B)': 0.02019, 'val/box_loss': 3.5034, 'val/cls_loss': 3.75019, 'val/dfl_loss': 3.47645, 'fitness': 0.02413}
+# Best fitness model is data/06_models/output/yolov8_conf1_v1/train
+# Best fitness hyperparameters are printed below.
+
+lr0: 0.01031
+lrf: 0.00937
+momentum: 0.93382
+weight_decay: 0.00043
+warmup_epochs: 2.58765
+warmup_momentum: 0.95
+box: 9.11888
+cls: 0.56355
+dfl: 2.07342
+hsv_h: 0.01594
+hsv_s: 0.85407
+hsv_v: 0.33572
+degrees: 0.0
+translate: 0.09809
+scale: 0.47826
+shear: 0.0
+perspective: 0.0
+flipud: 0.0
+fliplr: 0.40239
+bgr: 0.0
+mosaic: 0.7288
+mixup: 0.0
+copy_paste: 0.0
