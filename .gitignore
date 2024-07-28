@@ -13,12 +13,13 @@ data/01_raw/**
 data/02_intermediate/**
 data/03_primary/
 data/04_features/
-data/05_model_input/
+data/05_model_input/bullets
+data/05_model_input/aquarium
 data/06_models/
 data/07_model_output/
 data/08_reporting/
 
-!data/05_model_input/gunshots/
+# !data/05_model_input/gunshots/
 
 
 

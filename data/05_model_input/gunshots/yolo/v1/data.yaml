@@ -1,0 +1,13 @@
+train: /home/dusoudeth/Documentos/github/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/train/images
+val: /home/dusoudeth/Documentos/github/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/valid/images
+test: /home/dusoudeth/Documentos/github/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/test/images
+
+nc: 1
+names: ['bullets']
+
+roboflow:
+  workspace: bulletfromagun
+  project: bullet-holes-other-things
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/bulletfromagun/bullet-holes-other-things/dataset/1
