@@ -60,7 +60,7 @@ yolo:
                 lrf: 0.0001
                 workers: 16
                 iou: 0.5
-    yolov8_conf3_v1: # yolov8m, epoch 256, batch 32, img_size 640, workers 16
+    yolov8_conf3_v1: # yolov8m, epoch 256, batch 16, img_size 640, workers 16
         dataprep_params:
             experiment_id: "yolov8_conf3_v1"
             yolo_data:
@@ -90,7 +90,7 @@ yolo:
                 lrf: 0.0001
                 workers: 16
                 iou: 0.5
-    yolov8_conf4_v1:
+    yolov8_conf4_v1: # yolov8s, epoch 256, batch 16, img_size 640, workers 16
         dataprep_params:
             experiment_id: "yolov8_conf4_v1"
             yolo_data:
@@ -112,16 +112,15 @@ yolo:
             model_name : yolov8s.pt
             experiment_name: "yolov8_conf4_v1"
             model_config:
-                epochs: 1024
+                epochs: 256
                 batch: 16
-                img_size: 512
-                optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.
+                img_size: 640
+                optimizer: "auto"
                 lr0: 0.001
                 lrf: 0.0001
-                workers: 8
-                rect: True
+                workers: 16
                 iou: 0.5
-    yolov8_conf5_v1:
+    yolov8_conf5_v1: # yolov8n, epoch 256, batch 16, img_size 640, workers 16
         dataprep_params:
             experiment_id: "yolov8_conf5_v1"
             yolo_data:
@@ -143,12 +142,71 @@ yolo:
             model_name : yolov8n.pt
             experiment_name: "yolov8_conf5_v1"
             model_config:
-                epochs: 8192
-                batch: 32
-                img_size: 512
-                optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.
+                epochs: 256
+                batch: 16
+                img_size: 640
+                optimizer: "auto"
                 lr0: 0.001
                 lrf: 0.0001
-                workers: 8
-                rect: True
+                workers: 16
+                iou: 0.5
+    yolov8_conf6_v1: # yolov8s, epoch 512, batch 16, img_size 640, workers 16
+        dataprep_params:
+            experiment_id: "yolov8_conf6_v1"
+            yolo_data:
+                path:
+                    - data
+                    - 05_model_input
+                    - gunshots
+                    - yolo
+                    - v1
+                datasets:
+                    - train
+                    - valid
+                    - test
+        fine_tuning_params:
+            path:
+                - data
+                - 06_models
+                - output
+            model_name : yolov8s.pt
+            experiment_name: "yolov8_conf6_v1"
+            model_config:
+                epochs: 512
+                batch: 32
+                img_size: 640
+                optimizer: "auto"
+                lr0: 0.001
+                lrf: 0.0001
+                workers: 16
+                iou: 0.5
+    yolov8_conf7_v1: # yolov8s, epoch 1024, batch 16, img_size 640, workers 16
+        dataprep_params:
+            experiment_id: "yolov8_conf7_v1"
+            yolo_data:
+                path:
+                    - data
+                    - 05_model_input
+                    - gunshots
+                    - yolo
+                    - v1
+                datasets:
+                    - train
+                    - valid
+                    - test
+        fine_tuning_params:
+            path:
+                - data
+                - 06_models
+                - output
+            model_name : yolov8s.pt
+            experiment_name: "yolov8_conf7_v1"
+            model_config:
+                epochs: 1024
+                batch: 16
+                img_size: 640
+                optimizer: "auto"
+                lr0: 0.001
+                lrf: 0.0001
+                workers: 16
                 iou: 0.5
