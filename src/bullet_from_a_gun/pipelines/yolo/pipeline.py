@@ -141,6 +141,7 @@ def create_pipeline(**kwargs) -> Pipeline:
         pipe=template_fine_tuning,
         namespace="yolo.yolov8_conf8_v1",
     )
+    # kedro run -n yolo.yolov8_conf8_v1.hyperparameter_tuning_yolo
     # kedro run -n yolo.yolov8_conf8_v1.fine_tune_yolo
     # kedro run -n yolo.yolov8_conf8_v1.evaluate_yolo
     # kedro run -n yolo.yolov8_conf8_v1.compress_results_yolo

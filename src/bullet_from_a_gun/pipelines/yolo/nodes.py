@@ -62,6 +62,7 @@ def hyperparameter_tuning_yolo(
         epochs = 5,
         iterations = 50,
         optimizer='AdamW',
+        batch_size = 32,
         plots = True,
         save = True,
         val = True,
