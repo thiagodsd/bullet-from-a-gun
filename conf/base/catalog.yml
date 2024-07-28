@@ -182,6 +182,9 @@ yolo.yolov8_conf5_v1.evaluation_plots:
     <<: *template_evaluation_matplotlib
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+yolo.yolov8_conf6_v1.hyperparameter_tuning_results:
+    <<: *template_hyperparameter_tuning_json
+
 yolo.yolov8_conf6_v1.model:
     type: MemoryDataset
 
@@ -195,6 +198,9 @@ yolo.yolov8_conf6_v1.evaluation_plots:
     <<: *template_evaluation_matplotlib
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+yolo.yolov8_conf7_v1.hyperparameter_tuning_results:
+    <<: *template_hyperparameter_tuning_json
+
 yolo.yolov8_conf7_v1.model:
     type: MemoryDataset
 
