@@ -1,6 +1,6 @@
 yolo:
     #
-    yolov8_conf1_v1:
+    yolov8_conf1_v1: # yolov8n, epoch 256, batch 32, img_size 640, workers 16
         dataprep_params:
             experiment_id: "yolov8_conf1_v1" 
             yolo_data:
@@ -22,15 +22,13 @@ yolo:
             model_name : yolov8n.pt
             experiment_name: "yolov8_conf1_v1" 
             model_config:
-                epochs: 500
-                batch: 16
-                img_size: 512
+                epochs: 256
+                batch: 32
+                img_size: 640
                 optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.
-                lr0: 0.0001
-                lrf: 0.01
-                workers: 8
-                rect: True
-                iou: 0.5
+                lr0: 0.001
+                lrf: 0.0001
+                workers: 16
     yolov8_conf2_v1:
         dataprep_params:
             experiment_id: "yolov8_conf2_v1"
