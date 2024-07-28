@@ -1,6 +1,9 @@
-train: /home/dusoudeth/Documentos/github/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/train/images
-val: /home/dusoudeth/Documentos/github/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/valid/images
-test: /home/dusoudeth/Documentos/github/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/test/images
+# train: /home/dusoudeth/Documentos/github/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/train/images
+# val: /home/dusoudeth/Documentos/github/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/valid/images
+# test: /home/dusoudeth/Documentos/github/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/test/images
+train: /home/ec2-user/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/train/images
+val: /home/ec2-user/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/valid/images
+test: /home/ec2-user/bullet-from-a-gun/data/05_model_input/gunshots/yolo/v1/test/images
 
 nc: 1
 names: ['bullets']
