@@ -22,11 +22,12 @@ yolo:
             model_name : yolov8n.pt
             experiment_name: "yolov8_conf1_v1" 
             model_config:
-                epochs: 128
+                epochs: 500
                 batch: 16
                 img_size: 512
                 optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.
-                lr: 0.0001
+                lr0: 0.0001
+                lrf: 0.01
                 workers: 8
                 rect: True
                 iou: 0.5
@@ -52,11 +53,12 @@ yolo:
             model_name : yolov8s.pt
             experiment_name: "yolov8_conf2_v1"
             model_config:
-                epochs: 128
+                epochs: 500
                 batch: 16
                 img_size: 512
                 optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.
-                lr: 0.0001
+                lr0: 0.0001
+                lrf: 0.01
                 workers: 8
                 rect: True
                 iou: 0.5
@@ -86,7 +88,8 @@ yolo:
                 batch: 16
                 img_size: 512
                 optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.
-                lr: 0.0001
+                lr0: 0.001
+                lrf: 0.0001
                 workers: 8
                 rect: True
                 iou: 0.5
@@ -112,11 +115,12 @@ yolo:
             model_name : yolov8s.pt
             experiment_name: "yolov8_conf4_v1"
             model_config:
-                epochs: 8192
+                epochs: 1024
                 batch: 16
                 img_size: 512
                 optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.
-                lr: 0.0001
+                lr0: 0.001
+                lrf: 0.0001
                 workers: 8
                 rect: True
                 iou: 0.5
@@ -146,7 +150,8 @@ yolo:
                 batch: 32
                 img_size: 512
                 optimizer: "auto" # Options include SGD, Adam, AdamW, NAdam, RAdam, RMSProp etc., or auto for automatic selection based on model configuration.
-                lr: 0.0001
+                lr0: 0.001
+                lrf: 0.0001
                 workers: 8
                 rect: True
                 iou: 0.5

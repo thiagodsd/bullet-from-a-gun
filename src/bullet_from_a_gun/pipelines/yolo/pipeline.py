@@ -74,6 +74,7 @@ def create_pipeline(**kwargs) -> Pipeline:
     # kedro run -n yolo.yolov8_conf1_v1.fine_tune_yolo
     # kedro run -n yolo.yolov8_conf1_v1.evaluate_yolo
     # kedro run -n yolo.yolov8_conf1_v1.compress_results_yolo
+    # kedro run -n yolo.yolov8_conf1_v1.fine_tune_yolo,yolo.yolov8_conf1_v1.evaluate_yolo
 
     # gunshot :: yolov8 :: yolov8_conf2_v1
     yolov8_conf2_v1 = pipeline(
@@ -83,6 +84,7 @@ def create_pipeline(**kwargs) -> Pipeline:
     # kedro run -n yolo.yolov8_conf2_v1.fine_tune_yolo
     # kedro run -n yolo.yolov8_conf2_v1.evaluate_yolo
     # kedro run -n yolo.yolov8_conf2_v1.compress_results_yolo
+    # kedro run -n yolo.yolov8_conf2_v1.fine_tune_yolo,yolo.yolov8_conf2_v1.evaluate_yolo
 
     # gunshot :: yolov8 :: yolov8_conf3_v1
     yolov8_conf3_v1 = pipeline(
@@ -92,6 +94,7 @@ def create_pipeline(**kwargs) -> Pipeline:
     # kedro run -n yolo.yolov8_conf3_v1.fine_tune_yolo
     # kedro run -n yolo.yolov8_conf3_v1.evaluate_yolo
     # kedro run -n yolo.yolov8_conf3_v1.compress_results_yolo
+    # kedro run -n yolo.yolov8_conf3_v1.fine_tune_yolo,yolo.yolov8_conf3_v1.evaluate_yolo
 
     # gunshot :: yolov8 :: yolov8_conf4_v1
     yolov8_conf4_v1 = pipeline(
@@ -101,6 +104,7 @@ def create_pipeline(**kwargs) -> Pipeline:
     # kedro run -n yolo.yolov8_conf4_v1.fine_tune_yolo
     # kedro run -n yolo.yolov8_conf4_v1.evaluate_yolo
     # kedro run -n yolo.yolov8_conf4_v1.compress_results_yolo
+    # kedro run -n yolo.yolov8_conf4_v1.fine_tune_yolo,yolo.yolov8_conf4_v1.evaluate_yolo
 
     # gunshot :: yolov8 :: yolov8_conf5_v1
     yolov8_conf5_v1 = pipeline(
@@ -110,6 +114,7 @@ def create_pipeline(**kwargs) -> Pipeline:
     # kedro run -n yolo.yolov8_conf5_v1.fine_tune_yolo
     # kedro run -n yolo.yolov8_conf5_v1.evaluate_yolo
     # kedro run -n yolo.yolov8_conf5_v1.compress_results_yolo
+    # kedro run -n yolo.yolov8_conf5_v1.fine_tune_yolo,yolo.yolov8_conf5_v1.evaluate_yolo
 
     return yolov8_conf1_v1 \
         + yolov8_conf2_v1 \

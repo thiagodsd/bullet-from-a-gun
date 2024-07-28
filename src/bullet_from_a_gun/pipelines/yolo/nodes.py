@@ -120,7 +120,8 @@ def fine_tune_yolo(
         project = _output_path_,
         name = _experiment_id_,
         optimizer = fine_tuning_params["model_config"]["optimizer"],
-        lr0 = fine_tuning_params["model_config"]["lr"],
+        lr0 = fine_tuning_params["model_config"]["lr0"],
+        lrf = fine_tuning_params["model_config"]["lrf"],
         # rect = fine_tuning_params["model_config"]["rect"],
         # iou = fine_tuning_params["model_config"]["iou"],
         device = 0,
@@ -129,7 +130,7 @@ def fine_tune_yolo(
         val = True,
         cache = True,
         single_cls = True,
-        amp = False
+        amp = False,
     )
 
     return results
