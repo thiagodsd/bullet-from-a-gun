@@ -210,3 +210,33 @@ yolo:
                 lrf: 0.0001
                 workers: 16
                 iou: 0.5
+    yolov8_conf8_v1: # yolov8s, epoch 256, batch 32, img_size 640, workers 16
+        dataprep_params:
+            experiment_id: "yolov8_conf8_v1"
+            yolo_data:
+                path:
+                    - data
+                    - 05_model_input
+                    - gunshots
+                    - yolo
+                    - v1
+                datasets:
+                    - train
+                    - valid
+                    - test
+        fine_tuning_params:
+            path:
+                - data
+                - 06_models
+                - output
+            model_name : yolov8n.pt
+            experiment_name: "yolov8_conf8_v1"
+            model_config:
+                epochs: 256
+                batch: 32
+                img_size: 640
+                optimizer: "auto"
+                lr0: 0.001
+                lrf: 0.0001
+                workers: 16
+                iou: 0.5

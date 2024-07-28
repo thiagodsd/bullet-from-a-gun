@@ -3,25 +3,29 @@
 ## catalog
 
 ```yaml
-yolo.yolov8_conf7_v1.model:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+yolo.yolov8_conf8_v1.hyperparameter_tuning_results:
+    <<: *template_hyperparameter_tuning_json
+
+yolo.yolov8_conf8_v1.model:
     type: MemoryDataset
 
-yolo.yolov8_conf7_v1.fine_tuning_results:
+yolo.yolov8_conf8_v1.fine_tuning_results:
     <<: *template_fine_tuning_json
 
-yolo.yolov8_conf7_v1.evaluation_results:
+yolo.yolov8_conf8_v1.evaluation_results:
     <<: *template_evaluation_json
 
-yolo.yolov8_conf7_v1.evaluation_plots:
+yolo.yolov8_conf8_v1.evaluation_plots:
     <<: *template_evaluation_matplotlib
 ```
 
 ## parameters
 
 ```yaml
-    yolov8_conf7_v1: # yolov8n, epoch 256, batch 16, img_size 640, workers 16
+    yolov8_conf8_v1: # yolov8n, epoch 256, batch 16, img_size 640, workers 16
         dataprep_params:
-            experiment_id: "yolov8_conf7_v1"
+            experiment_id: "yolov8_conf8_v1"
             yolo_data:
                 path:
                     - data
@@ -39,7 +43,7 @@ yolo.yolov8_conf7_v1.evaluation_plots:
                 - 06_models
                 - output
             model_name : yolov8n.pt
-            experiment_name: "yolov8_conf7_v1"
+            experiment_name: "yolov8_conf8_v1"
             model_config:
                 epochs: 256
                 batch: 16
@@ -54,13 +58,13 @@ yolo.yolov8_conf7_v1.evaluation_plots:
 ## pipeline
 
 ```python
-    # gunshot :: yolov8 :: yolov8_conf7_v1
-    yolov8_conf7_v1 = pipeline(
+    # gunshot :: yolov8 :: yolov8_conf8_v1
+    yolov8_conf8_v1 = pipeline(
         pipe=template_fine_tuning,
-        namespace="yolo.yolov8_conf7_v1",
+        namespace="yolo.yolov8_conf8_v1",
     )
-    # kedro run -n yolo.yolov8_conf7_v1.fine_tune_yolo
-    # kedro run -n yolo.yolov8_conf7_v1.evaluate_yolo
-    # kedro run -n yolo.yolov8_conf7_v1.compress_results_yolo
-    # kedro run -n yolo.yolov8_conf7_v1.fine_tune_yolo,yolo.yolov8_conf7_v1.evaluate_yolo
+    # kedro run -n yolo.yolov8_conf8_v1.fine_tune_yolo
+    # kedro run -n yolo.yolov8_conf8_v1.evaluate_yolo
+    # kedro run -n yolo.yolov8_conf8_v1.compress_results_yolo
+    # kedro run -n yolo.yolov8_conf8_v1.fine_tune_yolo,yolo.yolov8_conf8_v1.evaluate_yolo
 ```
