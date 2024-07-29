@@ -59,7 +59,7 @@ def hyperparameter_tuning_yolo(
     model.tune(
         data = _yolo_conf_data_,
         project = os.path.join(_output_path_, _experiment_id_),
-        epochs = 5,
+        epochs = 25,
         iterations = 50,
         optimizer='AdamW',
         batch = 32,

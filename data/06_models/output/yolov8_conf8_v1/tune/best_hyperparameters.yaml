@@ -1,0 +1,30 @@
+# 50/50 iterations complete ✅ (7473.74s)
+# Results saved to data/06_models/output/yolov8_conf8_v1/tune
+# Best fitness=0.04793 observed at iteration 51
+# Best fitness metrics are None
+# Best fitness model is None
+# Best fitness hyperparameters are printed below.
+
+lr0: 0.0114
+lrf: 0.00955
+momentum: 0.90967
+weight_decay: 0.00071
+warmup_epochs: 2.24237
+warmup_momentum: 0.38539
+box: 6.73943
+cls: 0.21052
+dfl: 2.46445
+hsv_h: 0.01337
+hsv_s: 0.40739
+hsv_v: 0.35725
+degrees: 0.0
+translate: 0.06658
+scale: 0.60685
+shear: 0.0
+perspective: 0.0
+flipud: 0.0
+fliplr: 0.46092
+bgr: 0.0
+mosaic: 0.94427
+mixup: 0.0
+copy_paste: 0.0
