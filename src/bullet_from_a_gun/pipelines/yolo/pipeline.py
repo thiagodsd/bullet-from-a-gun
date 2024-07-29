@@ -58,7 +58,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 "params:dataprep_params",
                 "params:fine_tuning_params",
                 "evaluation_results",
-                "evaluation_plots",
+                # "evaluation_plots",
             ],
             outputs=None,
             name="compress_results_yolo",

@@ -199,13 +199,13 @@ def compress_results(
         dataprep_params: dict,
         fine_tuning_params: dict,
         evaluation_results: dict,
-        evaluation_plots: dict,
+        # evaluation_plots: dict,
     ) -> None:
     """
     `todo` documentation.
     """
     _ = evaluation_results
-    _ = evaluation_plots
+    # _ = evaluation_plots
     np.random.seed(0)
     torch.manual_seed(0)
     random.seed(0)
