@@ -19,6 +19,8 @@ Our primary goal is to systematically evaluate and identify the most effective C
 ## Software and Hardware
 This project was developed on a 64-bit *Ubuntu Linux 22.04* operating system, equipped with 16 GB of RAM and an 8-core *AMD Ryzen 7 3700X* processor. The graphics processing unit used was a *NVIDIA GeForce GTX 1660 Ti*. All code was implemented and executed using the *Python* programming language, version 3.10.12. Most of the deep learning models were developed using the *PyTorch* library, version 2.0.0+cu117.
 
+The training for the yolo branch was performed using *g4dn.2xlarge* instances on the *Deep Learning OSS Nvidia Driver AMI GPU PyTorch 2.3.0 (Amazon Linux 2) 20240716 AMI*. These instances are equipped with 32 GB of RAM and feature an *NVIDIA T4 Tensor Core GPU*. All code was implemented and executed using the Python programming language, version 3.10.12. The YOLO models were developed using the PyTorch library, version 2.3.0+cu117.
+
 ## Methodology
 In this section the steps taken to prepare data, train models, and evaluate the results are described.
 
