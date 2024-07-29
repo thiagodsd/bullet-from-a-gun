@@ -52,3 +52,5 @@ Citing/reference: `arXiv:1905.05055v3 [cs.CV] 18 Jan 2023`
 -  https://github.com/NielsRogge/Transformers-Tutorials/blob/master/DETR/Fine_tuning_DetrForObjectDetection_on_custom_dataset_(balloon).ipynb
 -  https://github.com/NielsRogge/Transformers-Tutorials/blob/master/DETA/Fine_tuning_DETA_on_a_custom_dataset_(balloon).ipynb
 -  https://colab.research.google.com/github/roboflow-ai/notebooks/blob/main/notebooks/train-huggingface-detr-on-custom-dataset.ipynb?ref=blog.roboflow.com#scrollTo=jbzTzHJW22up
+-  [Understanding the Disharmony between Dropout and Batch Normalization by Variance Shift](https://arxiv.org/pdf/1801.05134)
+-  [A Recipe for Training Neural Networks](https://karpathy.github.io/2019/04/25/recipe/)
