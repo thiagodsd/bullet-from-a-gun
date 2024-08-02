@@ -320,3 +320,6 @@ output/**/*
 data/01_raw/aquarium_train_output_1.txt
 data/01_raw/bullets_train_output_1.txt
 data/01_raw/gunshot_train_output_1.txt
+detectron2_*.zip
+yolov8*.zip
+*.pt
