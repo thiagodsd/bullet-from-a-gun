@@ -184,11 +184,7 @@
                 "CONV_DIM": 256,
                 "NORM": "",
                 "CLS_AGNOSTIC_BBOX_REG": false,
-                "TRAIN_ON_PRED_BOXES": false,
-                "USE_FED_LOSS": false,
-                "USE_SIGMOID_CE": false,
-                "FED_LOSS_FREQ_WEIGHT_POWER": 0.5,
-                "FED_LOSS_NUM_CLASSES": 50
+                "TRAIN_ON_PRED_BOXES": false
             },
             "ROI_BOX_CASCADE_HEAD": {
                 "BBOX_REG_WEIGHTS": [
@@ -373,25 +369,21 @@
             "ASPECT_RATIO_GROUPING": true,
             "SAMPLER_TRAIN": "TrainingSampler",
             "REPEAT_THRESHOLD": 0.0,
-            "REPEAT_SQRT": true,
             "FILTER_EMPTY_ANNOTATIONS": true
         },
         "SOLVER": {
             "LR_SCHEDULER_NAME": "WarmupMultiStepLR",
             "MAX_ITER": 256,
             "BASE_LR": 0.00125,
-            "BASE_LR_END": 0.0,
             "MOMENTUM": 0.9,
             "NESTEROV": false,
             "WEIGHT_DECAY": 0.0001,
             "WEIGHT_DECAY_NORM": 0.0,
             "GAMMA": 0.1,
             "STEPS": [],
-            "NUM_DECAYS": 3,
             "WARMUP_FACTOR": 0.001,
             "WARMUP_ITERS": 1000,
             "WARMUP_METHOD": "linear",
-            "RESCALE_INTERVAL": false,
             "CHECKPOINT_PERIOD": 5000,
             "IMS_PER_BATCH": 2,
             "REFERENCE_WORLD_SIZE": 0,
