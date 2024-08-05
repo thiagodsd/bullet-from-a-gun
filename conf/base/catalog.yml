@@ -86,6 +86,14 @@ detectron2.rccn_101_conf5_v1.evaluation_results:
     <<: *template_evaluation_json
 detectron2.rccn_101_conf5_v1.evaluation_plots:
     <<: *template_evaluation_matplotlib
+
+# rccn_101_conf6_v1
+detectron2.rccn_101_conf6_v1.fine_tuning_results:
+    <<: *template_fine_tuning_json
+detectron2.rccn_101_conf6_v1.evaluation_results:
+    <<: *template_evaluation_json
+detectron2.rccn_101_conf6_v1.evaluation_plots:
+    <<: *template_evaluation_matplotlib
     
 # mask_rccn_50_conf1_v1
 detectron2.mask_rccn_50_conf1_v1.fine_tuning_results:

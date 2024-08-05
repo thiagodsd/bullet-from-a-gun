@@ -76,21 +76,21 @@ yolo.yolov8_conf8_v1.evaluation_plots:
 ### catalog
 
 ```yaml
-# rccn_101_conf5_v1
-detectron2.rccn_101_conf5_v1.fine_tuning_results:
+# rccn_101_conf6_v1
+detectron2.rccn_101_conf6_v1.fine_tuning_results:
     <<: *template_fine_tuning_json
-detectron2.rccn_101_conf5_v1.evaluation_results:
+detectron2.rccn_101_conf6_v1.evaluation_results:
     <<: *template_evaluation_json
-detectron2.rccn_101_conf5_v1.evaluation_plots:
+detectron2.rccn_101_conf6_v1.evaluation_plots:
     <<: *template_evaluation_matplotlib
 ```
 
 ### parameters
 
 ```yaml
-    rccn_101_conf5_v1: # rcnn, epoch 256, batch 2, img_size 512, workers 2
+    rccn_101_conf6_v1: # rcnn, epoch 256, batch 2, img_size 512, workers 2
         dataprep_params:
-            experiment_id: "detectron2_rccn_101_conf5_v1"
+            experiment_id: "detectron2_rccn_101_conf6_v1"
             coco_data:
                 path:
                     - data
@@ -122,12 +122,12 @@ detectron2.rccn_101_conf5_v1.evaluation_plots:
 ### pipeline
 
 ```python
-    # gunshot :: detectron2 :: rccn_101_conf5_v1
-    detectron2_rccn_101_conf5_v1 = pipeline(
+    # gunshot :: detectron2 :: rccn_101_conf6_v1
+    detectron2_rccn_101_conf6_v1 = pipeline(
         pipe=template_fine_tuning,
-        namespace="detectron2.rccn_101_conf5_v1",
+        namespace="detectron2.rccn_101_conf6_v1",
     )
-    # kedro run -n detectron2.rccn_101_conf5_v1.fine_tune_detectron2
-    # kedro run -n detectron2.rccn_101_conf5_v1.evaluate_detectron2
-    # kedro run -n detectron2.rccn_101_conf5_v1.compress_results_detectron2
+    # kedro run -n detectron2.rccn_101_conf6_v1.fine_tune_detectron2
+    # kedro run -n detectron2.rccn_101_conf6_v1.evaluate_detectron2
+    # kedro run -n detectron2.rccn_101_conf6_v1.compress_results_detectron2
 ```
